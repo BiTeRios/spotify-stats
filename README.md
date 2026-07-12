@@ -19,3 +19,10 @@
 
 - `frontend` — пользовательский интерфейс
 - `backend` — REST API и интеграция со Spotify
+
+## Запуск backend
+
+Перейдите в папку backend:
+
+```bash
+cd backend
