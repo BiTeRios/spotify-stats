@@ -282,8 +282,8 @@ Current progress:
 * [x] FastAPI backend created
 * [x] Environment variables configured
 * [x] CORS configured
-* [ ] Health endpoint added
-* [ ] Frontend connected to backend
+* [x] Health endpoint added
+* [x] Frontend connected to backend
 * [ ] Spotify Developer application configured
 * [ ] Spotify authentication implemented
 * [ ] User profile implemented

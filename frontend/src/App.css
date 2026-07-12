@@ -6,7 +6,7 @@
 }
 
 .hero {
-  width: min(700px, 100%);
+  width: min(760px, 100%);
   padding: 48px;
   border: 1px solid #2c2c2c;
   border-radius: 24px;
@@ -35,12 +35,94 @@ h1 {
   line-height: 1.6;
 }
 
-.status {
-  display: inline-block;
+.connection-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 32px;
+  padding: 20px;
+  border: 1px solid;
+  border-radius: 16px;
+}
+
+.connection-card strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.connection-card p {
+  margin: 4px 0 0;
+  line-height: 1.5;
+}
+
+.connection-indicator {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  margin-top: 5px;
+  border-radius: 50%;
+}
+
+.connection-card-loading {
+  border-color: #4a4a4a;
+  background: #202020;
+  color: #d1d1d1;
+}
+
+.connection-card-loading .connection-indicator {
+  background: #b3b3b3;
+}
+
+.connection-card-success {
+  border-color: rgba(30, 215, 96, 0.4);
+  background: rgba(30, 215, 96, 0.08);
+  color: #ffffff;
+}
+
+.connection-card-success .connection-indicator {
+  background: #1ed760;
+  box-shadow: 0 0 12px rgba(30, 215, 96, 0.7);
+}
+
+.connection-card-error {
+  border-color: rgba(255, 86, 86, 0.5);
+  background: rgba(255, 86, 86, 0.08);
+  color: #ffb8b8;
+}
+
+.connection-card-error .connection-indicator {
+  background: #ff5656;
+}
+
+.health-details {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+}
+
+.health-details div {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+}
+
+.health-details dt {
+  color: #b3b3b3;
+}
+
+.health-details dd {
   margin: 0;
-  padding: 10px 16px;
-  border-radius: 999px;
-  background: rgba(30, 215, 96, 0.12);
-  color: #1ed760;
   font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding: 32px 24px;
+  }
+
+  .health-details div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
 }
