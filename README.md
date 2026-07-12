@@ -280,7 +280,7 @@ Current progress:
 * [x] Git repository created
 * [x] React, Vite, and TypeScript frontend created
 * [x] FastAPI backend created
-* [ ] Environment variables configured
+* [x] Environment variables configured
 * [ ] CORS configured
 * [ ] Health endpoint added
 * [ ] Frontend connected to backend
