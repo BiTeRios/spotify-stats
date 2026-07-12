@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     api_prefix: str = "/api"
     frontend_url: str = "http://localhost:5173"
 
+    spotify_client_id: str
+    spotify_client_secret: str
+    spotify_redirect_uri: str
+
     model_config = SettingsConfigDict(
         env_file=BACKEND_DIR / ".env",
         env_file_encoding="utf-8",
