@@ -1,19 +1,27 @@
 import './App.css'
 
+import { env } from './config/env'
+
+
 function App() {
   return (
     <main className="app">
       <section className="hero">
         <p className="eyebrow">Spotify Stats</p>
 
-        <h1>Spotify Personal Statistics</h1>
+        <h1>Your personal Spotify statistics</h1>
 
         <p className="description">
-          Your favorite artists, tracks, recent plays, and other account statistics will be displayed here.
+          Explore your favorite artists, top tracks, recent listening
+          activity, and personal music preferences.
         </p>
 
         <p className="status">
-          Frontend launched successfully.
+          Frontend configured successfully
+        </p>
+
+        <p className="description">
+          API base URL: <code>{env.apiBaseUrl}</code>
         </p>
       </section>
     </main>
