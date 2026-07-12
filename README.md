@@ -281,7 +281,7 @@ Current progress:
 * [x] React, Vite, and TypeScript frontend created
 * [x] FastAPI backend created
 * [x] Environment variables configured
-* [ ] CORS configured
+* [x] CORS configured
 * [ ] Health endpoint added
 * [ ] Frontend connected to backend
 * [ ] Spotify Developer application configured
