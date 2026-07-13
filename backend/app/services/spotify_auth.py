@@ -15,7 +15,7 @@ SPOTIFY_SCOPES = (
 
 
 def build_spotify_authorization_url(state: str) -> str:
-    query_parameters = {
+    params = {
         "client_id": settings.spotify_client_id,
         "response_type": "code",
         "redirect_uri": settings.spotify_redirect_uri,
@@ -24,4 +24,4 @@ def build_spotify_authorization_url(state: str) -> str:
         "show_dialog": "false",
     }
 
-    return f"{SPOTIFY_AUTHORIZE_URL}?{urlencode(query_parameters)}"
+    return f"{SPOTIFY_AUTHORIZE_URL}?{urlencode(params)}"

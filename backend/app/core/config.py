@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     spotify_client_secret: str
     spotify_redirect_uri: str
 
+    oauth_state_cookie_name: str = "spotify_oauth_state"
+    oauth_state_cookie_max_age: int = 600
+    cookie_secure: bool = False # For production put true
+
     model_config = SettingsConfigDict(
         env_file=BACKEND_DIR / ".env",
         env_file_encoding="utf-8",

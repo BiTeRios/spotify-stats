@@ -10,6 +10,7 @@ frontend/dist/
 
 # Backend
 backend/.venv/
+backend/.venv-python39
 backend/venv/
 backend/__pycache__/
 backend/**/*.pyc
