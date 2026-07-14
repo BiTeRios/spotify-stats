@@ -7,7 +7,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.core.security import generate_oauth_state, oauth_states_match
 from app.database import get_db
-from app.services.auth_service import complete_spotify_login
+from app.services.auth_service import (
+    complete_spotify_login,
+    get_user_from_session_token,
+    revoke_session,
+)
 from app.services.exceptions import (
     AuthenticationPersistenceError,
     SpotifyServiceError,
@@ -29,6 +33,16 @@ def delete_oauth_state_cookie(response: Response) -> None:
     response.delete_cookie(
         key=settings.oauth_state_cookie_name,
         path=f"{settings.api_prefix}/auth",
+    )
+
+
+def delete_session_cookie(response: Response) -> None:
+    response.delete_cookie(
+        key=settings.session_cookie_name,
+        path=settings.api_prefix,
+        secure=settings.cookie_secure,
+        httponly=True,
+        samesite="lax",
     )
 
 
@@ -173,5 +187,105 @@ async def spotify_callback(
     )
 
     delete_oauth_state_cookie(response)
+
+    return response
+
+
+@router.get("/session")
+async def get_auth_session(
+    request: Request,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> JSONResponse:
+    session_token = request.cookies.get(
+        settings.session_cookie_name,
+    )
+
+    if not session_token:
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={
+                "authenticated": False,
+                "message": "Authentication required.",
+            },
+        )
+
+    try:
+        user = await get_user_from_session_token(
+            db=db,
+            session_token=session_token,
+        )
+
+    except AuthenticationPersistenceError as exc:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "authenticated": False,
+                "message": exc.message,
+            },
+        )
+
+    if user is None:
+        response = JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={
+                "authenticated": False,
+                "message": "Authentication session is invalid or expired.",
+            },
+        )
+
+        delete_session_cookie(response)
+
+        return response
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "authenticated": True,
+            "user": {
+                "id": user.id,
+                "spotify_account_id": user.spotify_account_id,
+                "display_name": user.display_name,
+                "avatar_url": user.avatar_url,
+            },
+        },
+    )
+
+@router.post("/logout")
+async def logout(
+    request: Request,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> JSONResponse:
+    session_token = request.cookies.get(
+        settings.session_cookie_name,
+    )
+
+    try:
+        await revoke_session(
+            db=db,
+            session_token=session_token,
+        )
+
+    except AuthenticationPersistenceError as exc:
+        response = JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "success": False,
+                "message": exc.message,
+            },
+        )
+
+        delete_session_cookie(response)
+
+        return response
+
+    response = JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "success": True,
+            "message": "Logged out successfully.",
+        },
+    )
+
+    delete_session_cookie(response)
 
     return response

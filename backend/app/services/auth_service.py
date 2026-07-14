@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -127,3 +127,80 @@ async def complete_spotify_login(
         await db.rollback()
 
         raise AuthenticationPersistenceError() from exc
+
+async def get_user_from_session_token(
+    db: AsyncSession,
+    session_token: str | None,
+) -> User | None:
+    if not session_token:
+        return None
+
+    session_token_hash = hash_session_token(
+        session_token,
+    )
+
+    now = utc_now()
+
+    try:
+        user = await db.scalar(
+            select(User)
+            .join(
+                AppSession,
+                AppSession.user_id == User.id,
+            )
+            .where(
+                AppSession.session_token_hash
+                == session_token_hash,
+                AppSession.expires_at > now,
+            )
+        )
+
+        if user is not None:
+            return user
+
+        await db.execute(
+            delete(AppSession).where(
+                AppSession.session_token_hash
+                == session_token_hash,
+            )
+        )
+
+        await db.commit()
+
+        return None
+
+    except SQLAlchemyError as exc:
+        await db.rollback()
+
+        raise AuthenticationPersistenceError(
+            message="Could not verify the authentication session.",
+        ) from exc
+
+
+async def revoke_session(
+    db: AsyncSession,
+    session_token: str | None,
+) -> None:
+    if not session_token:
+        return
+
+    session_token_hash = hash_session_token(
+        session_token,
+    )
+
+    try:
+        await db.execute(
+            delete(AppSession).where(
+                AppSession.session_token_hash
+                == session_token_hash,
+            )
+        )
+
+        await db.commit()
+
+    except SQLAlchemyError as exc:
+        await db.rollback()
+
+        raise AuthenticationPersistenceError(
+            message="Could not remove the authentication session.",
+        ) from exc
