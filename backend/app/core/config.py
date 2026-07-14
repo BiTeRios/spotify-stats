@@ -16,14 +16,21 @@ class Settings(BaseSettings):
     )
     debug: bool = False
     api_prefix: str = "/api"
+    
     frontend_url: str = "http://localhost:5173"
+    database_url: str = "sqlite+aiosqlite:///./spotify_stats.db"
 
     spotify_client_id: str
     spotify_client_secret: str
     spotify_redirect_uri: str
+    spotify_request_timeout_seconds: float = 10.0
 
     oauth_state_cookie_name: str = "spotify_oauth_state"
     oauth_state_cookie_max_age: int = 600
+
+    session_cookie_name: str = "spotify_stats_session"
+    session_cookie_max_age: int = 2_592_000
+    
     cookie_secure: bool = False # For production put true
 
     model_config = SettingsConfigDict(

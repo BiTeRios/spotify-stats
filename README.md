@@ -284,8 +284,8 @@ Current progress:
 * [x] CORS configured
 * [x] Health endpoint added
 * [x] Frontend connected to backend
-* [ ] Spotify Developer application configured
-* [ ] Spotify authentication implemented
+* [x] Spotify Developer application configured
+* [x] Spotify authentication implemented
 * [ ] User profile implemented
 * [ ] Top artists implemented
 * [ ] Top tracks implemented

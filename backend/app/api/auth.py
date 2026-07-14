@@ -1,15 +1,52 @@
-from fastapi import APIRouter, status
-from fastapi.responses import RedirectResponse
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Request, Response, status
+from fastapi.responses import JSONResponse, RedirectResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.core.security import generate_oauth_state
-from app.services.spotify_auth import build_spotify_authorization_url
+from app.core.security import generate_oauth_state, oauth_states_match
+from app.database import get_db
+from app.services.auth_service import complete_spotify_login
+from app.services.exceptions import (
+    AuthenticationPersistenceError,
+    SpotifyServiceError,
+)
+from app.services.spotify_api import get_current_spotify_profile
+from app.services.spotify_auth import (
+    build_spotify_authorization_url,
+    exchange_code_for_tokens,
+)
 
 
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"],
 )
+
+
+def delete_oauth_state_cookie(response: Response) -> None:
+    response.delete_cookie(
+        key=settings.oauth_state_cookie_name,
+        path=f"{settings.api_prefix}/auth",
+    )
+
+
+def create_callback_error_response(
+    message: str,
+    status_code: int = status.HTTP_400_BAD_REQUEST,
+) -> JSONResponse:
+    response = JSONResponse(
+        status_code=status_code,
+        content={
+            "success": False,
+            "message": message,
+        },
+    )
+
+    delete_oauth_state_cookie(response)
+
+    return response
 
 
 @router.get("/login")
@@ -34,5 +71,107 @@ def login_with_spotify() -> RedirectResponse:
         samesite="lax",
         path=f"{settings.api_prefix}/auth",
     )
+
+    return response
+
+
+@router.get("/callback")
+async def spotify_callback(
+    request: Request,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    code: str | None = None,
+    state: str | None = None,
+    error: str | None = None,
+) -> JSONResponse:
+    stored_state = request.cookies.get(
+        settings.oauth_state_cookie_name,
+    )
+
+    if not oauth_states_match(
+        received_state=state,
+        stored_state=stored_state,
+    ):
+        return create_callback_error_response(
+            message="Invalid or expired OAuth state.",
+        )
+
+    if error is not None:
+        if error == "access_denied":
+            message = "Spotify authorization was cancelled."
+        else:
+            message = "Spotify authorization failed."
+
+        return create_callback_error_response(
+            message=message,
+        )
+
+    if code is None:
+        return create_callback_error_response(
+            message="Spotify authorization code is missing.",
+        )
+
+    try:
+        tokens = await exchange_code_for_tokens(
+            code=code,
+        )
+
+        profile = await get_current_spotify_profile(
+            access_token=tokens.access_token,
+        )
+
+        completed_login = await complete_spotify_login(
+            db=db,
+            profile=profile,
+            tokens=tokens,
+        )
+
+    except SpotifyServiceError as exc:
+        return create_callback_error_response(
+            message=exc.message,
+            status_code=exc.status_code,
+        )
+
+    except AuthenticationPersistenceError as exc:
+        return create_callback_error_response(
+            message=exc.message,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+    avatar_url = (
+        profile.images[0].url
+        if profile.images
+        else None
+    )
+
+    spotify_profile_url = profile.external_urls.spotify
+
+    response = JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "success": True,
+            "message": "Spotify authorization completed successfully.",
+            "user": {
+                "id": completed_login.user.id,
+                "spotify_account_id": (
+                    completed_login.user.spotify_account_id
+                ),
+                "display_name": completed_login.user.display_name,
+                "avatar_url": avatar_url,
+                "spotify_url": spotify_profile_url,
+            },
+        },
+    )
+
+    response.set_cookie(
+        key=settings.session_cookie_name,
+        value=completed_login.session_token,
+        max_age=settings.session_cookie_max_age,
+        httponly=True,
+        secure=settings.cookie_secure,
+        samesite="lax",
+        path=settings.api_prefix,
+    )
+
+    delete_oauth_state_cookie(response)
 
     return response

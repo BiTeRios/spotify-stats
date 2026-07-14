@@ -1,0 +1,30 @@
+from pydantic import BaseModel, Field
+
+
+class SpotifyTokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+    expires_in: int
+    refresh_token: str | None = None
+    scope: str = ""
+
+
+class SpotifyImage(BaseModel):
+    url: str
+    height: int | None = None
+    width: int | None = None
+
+
+class SpotifyExternalUrls(BaseModel):
+    spotify: str | None = None
+
+
+class SpotifyProfileResponse(BaseModel):
+    account_id: str | None = None
+    id: str
+    display_name: str | None = None
+    images: list[SpotifyImage] = Field(default_factory=list)
+    external_urls: SpotifyExternalUrls = Field(
+        default_factory=SpotifyExternalUrls,
+    )
+    product: str | None = None
