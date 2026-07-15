@@ -204,3 +204,19 @@ async def revoke_session(
         raise AuthenticationPersistenceError(
             message="Could not remove the authentication session.",
         ) from exc
+    
+
+async def get_spotify_token_for_user(
+    db: AsyncSession,
+    user_id: int,
+) -> SpotifyToken | None:
+    try:
+        return await db.scalar(
+            select(SpotifyToken).where(
+                SpotifyToken.user_id == user_id,
+            )
+        )
+    except SQLAlchemyError as exc:
+        raise AuthenticationPersistenceError(
+            message="Could not load Spotify authorization data.",
+        ) from exc

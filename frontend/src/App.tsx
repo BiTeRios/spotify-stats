@@ -3,103 +3,264 @@ import { useEffect, useState } from 'react'
 import './App.css'
 
 import {
-  getHealth,
-  type HealthResponse,
-} from './api/health'
+  ApiRequestError,
+  getMyProfile,
+  getSpotifyLoginUrl,
+  logout,
+  type UserProfile,
+} from './api/profile'
+import ProfileAvatar from './components/ProfileAvatar'
 
+type PageState =
+  | { status: 'loading' }
+  | { status: 'guest' }
+  | { status: 'ready'; profile: UserProfile }
+  | { status: 'error'; message: string }
 
 function App() {
-  const [health, setHealth] = useState<HealthResponse | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [pageState, setPageState] = useState<PageState>({
+    status: 'loading',
+  })
+
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   useEffect(() => {
-    async function checkBackendConnection() {
+    async function loadProfile() {
       try {
-        const healthData = await getHealth()
+        const profile = await getMyProfile()
 
-        setHealth(healthData)
-        setError(null)
+        setPageState({
+          status: 'ready',
+          profile,
+        })
       } catch (requestError) {
+        if (
+          requestError instanceof ApiRequestError
+          && requestError.status === 401
+        ) {
+          setPageState({
+            status: 'guest',
+          })
+
+          return
+        }
+
         const message =
           requestError instanceof Error
             ? requestError.message
-            : 'An unknown connection error occurred'
+            : 'Could not load your Spotify profile.'
 
-        setError(message)
-        setHealth(null)
-      } finally {
-        setIsLoading(false)
+        setPageState({
+          status: 'error',
+          message,
+        })
       }
     }
 
-    void checkBackendConnection()
+    void loadProfile()
   }, [])
 
+  async function handleLogout() {
+    setIsLoggingOut(true)
+
+    try {
+      await logout()
+
+      setPageState({
+        status: 'guest',
+      })
+    } catch (requestError) {
+      const message =
+        requestError instanceof Error
+          ? requestError.message
+          : 'Could not log out.'
+
+      setPageState({
+        status: 'error',
+        message,
+      })
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
   return (
-    <main className="app">
-      <section className="hero">
-        <p className="eyebrow">Spotify Stats</p>
+    <main className="app-shell">
+      <header className="topbar">
+        <a
+          className="brand"
+          href="/"
+          aria-label="Spotify Stats home"
+        >
+          <span
+            className="brand-mark"
+            aria-hidden="true"
+          >
+            <span />
+            <span />
+            <span />
+          </span>
 
-        <h1>Your personal Spotify statistics</h1>
+          <span>Spotify Stats</span>
+        </a>
+      </header>
 
-        <p className="description">
-          Explore your favorite artists, top tracks, recent listening
-          activity, and personal music preferences.
-        </p>
+      <section className="profile-page">
+        {pageState.status === 'loading' && (
+          <div
+            className="status-panel"
+            aria-live="polite"
+          >
+            <span
+              className="loader"
+              aria-hidden="true"
+            />
 
-        {isLoading && (
-          <div className="connection-card connection-card-loading">
-            <span className="connection-indicator" />
+            <p className="status-label">
+              Loading your Spotify profile
+            </p>
 
-            <div>
-              <strong>Checking backend connection</strong>
-              <p>Connecting to the Spotify Stats API...</p>
-            </div>
+            <p className="status-description">
+              Connecting securely to your account...
+            </p>
           </div>
         )}
 
-        {!isLoading && health && (
-          <div className="connection-card connection-card-success">
-            <span className="connection-indicator" />
+        {pageState.status === 'guest' && (
+          <div className="guest-card">
+            <p className="eyebrow">
+              Your music, your story
+            </p>
 
-            <div>
-              <strong>Backend connection established</strong>
+            <h1>
+              See the sound behind your Spotify account.
+            </h1>
 
-              <dl className="health-details">
-                <div>
-                  <dt>Status</dt>
-                  <dd>{health.status}</dd>
-                </div>
+            <p className="guest-description">
+              Sign in to view your profile and prepare your
+              personal listening statistics dashboard.
+            </p>
 
-                <div>
-                  <dt>Service</dt>
-                  <dd>{health.service}</dd>
-                </div>
+            <a
+              className="primary-button"
+              href={getSpotifyLoginUrl()}
+            >
+              Continue with Spotify
+            </a>
 
-                <div>
-                  <dt>Environment</dt>
-                  <dd>{health.environment}</dd>
-                </div>
-              </dl>
-            </div>
+            <p className="privacy-note">
+              Your Spotify password is never shared with this app.
+            </p>
           </div>
         )}
 
-        {!isLoading && error && (
-          <div className="connection-card connection-card-error">
-            <span className="connection-indicator" />
+        {pageState.status === 'error' && (
+          <div
+            className="status-panel status-panel-error"
+            role="alert"
+          >
+            <p className="eyebrow">
+              Something went wrong
+            </p>
 
-            <div>
-              <strong>Backend connection failed</strong>
+            <h1>
+              We could not load your profile.
+            </h1>
 
-              <p>{error}</p>
+            <p className="status-description">
+              {pageState.message}
+            </p>
 
-              <p>
-                Make sure the FastAPI server is running on port 8000.
-              </p>
-            </div>
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => window.location.reload()}
+            >
+              Try again
+            </button>
           </div>
+        )}
+
+        {pageState.status === 'ready' && (
+          <article className="profile-card">
+            <div className="profile-hero">
+              <div className="profile-avatar-frame">
+                <ProfileAvatar
+                  displayName={pageState.profile.display_name}
+                  avatarUrl={pageState.profile.avatar_url}
+                />
+              </div>
+
+              <div className="profile-heading">
+                <p className="eyebrow">
+                  Spotify profile
+                </p>
+
+                <h1>
+                  {
+                    pageState.profile.display_name
+                    ?? 'Spotify listener'
+                  }
+                </h1>
+
+                <p className="profile-subtitle">
+                  Your personal music dashboard starts here.
+                </p>
+              </div>
+            </div>
+
+            <div className="profile-content">
+              <section
+                className="profile-details"
+                aria-label="Profile details"
+              >
+                <div className="detail-item">
+                  <span>Account</span>
+
+                  <strong>
+                    {pageState.profile.spotify_account_id}
+                  </strong>
+                </div>
+
+                <div className="detail-item">
+                  <span>Subscription</span>
+
+                  <strong className="subscription-badge">
+                    {
+                      pageState.profile.subscription
+                      ?? 'Not available'
+                    }
+                  </strong>
+                </div>
+              </section>
+
+              <div className="profile-actions">
+                {pageState.profile.spotify_url && (
+                  <a
+                    className="primary-button"
+                    href={pageState.profile.spotify_url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Open in Spotify
+                  </a>
+                )}
+
+                <button
+                  className="secondary-button"
+                  type="button"
+                  disabled={isLoggingOut}
+                  onClick={() => void handleLogout()}
+                >
+                  {
+                    isLoggingOut
+                      ? 'Logging out...'
+                      : 'Log out'
+                  }
+                </button>
+              </div>
+            </div>
+          </article>
         )}
       </section>
     </main>

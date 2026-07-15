@@ -25,6 +25,51 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+}:root {
+  font-family:
+    Inter,
+    "Helvetica Neue",
+    Arial,
+    system-ui,
+    sans-serif;
+  color: #ffffff;
+  background: #000000;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: #000000;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(30, 215, 96, 0.65);
+  outline-offset: 4px;
 }
 
 button,

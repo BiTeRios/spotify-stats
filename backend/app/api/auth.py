@@ -96,7 +96,7 @@ async def spotify_callback(
     code: str | None = None,
     state: str | None = None,
     error: str | None = None,
-) -> JSONResponse:
+) -> Response:
     stored_state = request.cookies.get(
         settings.oauth_state_cookie_name,
     )
@@ -159,21 +159,9 @@ async def spotify_callback(
 
     spotify_profile_url = profile.external_urls.spotify
 
-    response = JSONResponse(
-        status_code=status.HTTP_200_OK,
-        content={
-            "success": True,
-            "message": "Spotify authorization completed successfully.",
-            "user": {
-                "id": completed_login.user.id,
-                "spotify_account_id": (
-                    completed_login.user.spotify_account_id
-                ),
-                "display_name": completed_login.user.display_name,
-                "avatar_url": avatar_url,
-                "spotify_url": spotify_profile_url,
-            },
-        },
+    response = RedirectResponse(
+        url=settings.frontend_url,
+        status_code=status.HTTP_303_SEE_OTHER,
     )
 
     response.set_cookie(
