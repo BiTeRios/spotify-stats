@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_current_user
@@ -23,41 +23,51 @@ router = APIRouter(
     tags=["Statistics"],
 )
 
-DEFAULT_TOP_ARTISTS_TIME_RANGE: TopItemsTimeRange = "medium_term"
-DEFAULT_TOP_ARTISTS_LIMIT = 20
-
 
 @router.get(
     "/top-artists",
     response_model=TopArtistsResponse,
 )
 async def get_top_artists(
-    current_user: Annotated[User, Depends(get_current_user)],
-    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[
+        User,
+        Depends(get_current_user),
+    ],
+    db: Annotated[
+        AsyncSession,
+        Depends(get_db),
+    ],
+    time_range: Annotated[
+        TopItemsTimeRange,
+        Query(
+            description="Spotify affinity time range.",
+        ),
+    ] = "medium_term",
+    limit: Annotated[
+        int,
+        Query(
+            ge=1,
+            le=50,
+            description="Number of artists to return.",
+        ),
+    ] = 20,
 ) -> TopArtistsResponse:
     try:
-        spotify_token = await get_valid_spotify_access_token(
+        access_token = await get_valid_spotify_access_token(
             db=db,
             user_id=current_user.id,
+        )
+
+        spotify_response = await get_top_spotify_artists(
+            access_token=access_token,
+            time_range=time_range,
+            limit=limit,
         )
     except AuthenticationPersistenceError as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=exc.message,
         ) from exc
-
-    if spotify_token is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Spotify authorization is missing.",
-        )
-
-    try:
-        spotify_response = await get_top_spotify_artists(
-            access_token=spotify_token.access_token,
-            time_range=DEFAULT_TOP_ARTISTS_TIME_RANGE,
-            limit=DEFAULT_TOP_ARTISTS_LIMIT,
-        )
     except SpotifyServiceError as exc:
         raise HTTPException(
             status_code=exc.status_code,
@@ -66,5 +76,5 @@ async def get_top_artists(
 
     return build_top_artists_response(
         spotify_response=spotify_response,
-        time_range=DEFAULT_TOP_ARTISTS_TIME_RANGE,
+        time_range=time_range,
     )
