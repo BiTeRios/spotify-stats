@@ -20,6 +20,7 @@ import ArtistCard from './components/ArtistCard'
 import ArtistCardSkeleton from './components/ArtistCardSkeleton'
 import ProfileAvatar from './components/ProfileAvatar'
 import TimeRangeSwitcher from './components/TimeRangeSwitcher'
+import ArtistLimitSelector from './components/ArtistLimitSelector'
 
 type PageState =
   | { status: 'loading' }
@@ -70,6 +71,9 @@ function App() {
 
   const [selectedTimeRange, setSelectedTimeRange] =
     useState<TopItemsTimeRange>('medium_term')
+
+  const [selectedArtistLimit, setSelectedArtistLimit] =
+    useState(20)
 
   const [artistsState, setArtistsState] =
     useState<ArtistsState>({
@@ -132,7 +136,7 @@ function App() {
       try {
         const topArtists = await getTopArtists(
           selectedTimeRange,
-          20,
+          selectedArtistLimit,
         )
 
         if (isCancelled) {
@@ -187,6 +191,7 @@ function App() {
   }, [
     pageState.status,
     selectedTimeRange,
+    selectedArtistLimit,
     artistsReloadKey,
   ])
 
@@ -420,10 +425,17 @@ function App() {
                 </p>
               </div>
 
-              <TimeRangeSwitcher
-                value={selectedTimeRange}
-                onChange={setSelectedTimeRange}
-              />
+              <div className="artists-controls">
+                <TimeRangeSwitcher
+                  value={selectedTimeRange}
+                  onChange={setSelectedTimeRange}
+                />
+
+                <ArtistLimitSelector
+                  value={selectedArtistLimit}
+                  onChange={setSelectedArtistLimit}
+                />
+              </div>
 
               <p
                 className="sr-only"
@@ -440,24 +452,33 @@ function App() {
                 <div className="artists-grid">
                   {
                     Array.from(
-                      { length: 8 },
-                      (_, index) => (
-                        <ArtistCardSkeleton key={index} />
-                      ),
-                    )
+                    {
+                      length: Math.min(selectedArtistLimit, 10),
+                    },
+                    (_, index) => (
+                      <ArtistCardSkeleton key={index} />
+                    ),
+                  )
                   }
                 </div>
               )}
 
               {artistsState.status === 'ready' && (
-                <div className="artists-grid">
-                  {artistsState.data.items.map((artist) => (
-                    <ArtistCard
-                      key={artist.spotify_id}
-                      artist={artist}
-                    />
-                  ))}
-                </div>
+                <>
+                  <p className="artists-result-count">
+                    Showing {artistsState.data.items.length} of{' '}
+                    {artistsState.data.total} available artists
+                  </p>
+
+                  <div className="artists-grid">
+                    {artistsState.data.items.map((artist) => (
+                      <ArtistCard
+                        key={artist.spotify_id}
+                        artist={artist}
+                      />
+                    ))}
+                  </div>
+                </>
               )}
 
               {artistsState.status === 'empty' && (
