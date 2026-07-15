@@ -7,7 +7,7 @@ from fastapi import FastAPI
 
 import app.models  # noqa: F401
 from app.database import Base, engine
-from app.api import auth, health, me
+from app.api import auth, health, me, stats
 from app.core.config import settings
 
 @asynccontextmanager
@@ -49,6 +49,11 @@ app.include_router(
 
 app.include_router(
     me.router,
+    prefix=settings.api_prefix,
+)
+
+app.include_router(
+    stats.router,
     prefix=settings.api_prefix,
 )
 

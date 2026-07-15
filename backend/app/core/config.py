@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     spotify_client_secret: str
     spotify_redirect_uri: str
     spotify_request_timeout_seconds: float = 10.0
+    spotify_access_token_refresh_leeway_seconds: int = 60
+    spotify_refresh_token_lifetime_days: int = 180
 
     oauth_state_cookie_name: str = "spotify_oauth_state"
     oauth_state_cookie_max_age: int = 600

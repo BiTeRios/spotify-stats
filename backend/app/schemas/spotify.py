@@ -28,3 +28,22 @@ class SpotifyProfileResponse(BaseModel):
         default_factory=SpotifyExternalUrls,
     )
     product: str | None = None
+
+
+class SpotifyArtist(BaseModel):
+    id: str
+    name: str
+    images: list[SpotifyImage] = Field(default_factory=list)
+    genres: list[str] = Field(default_factory=list)
+    external_urls: SpotifyExternalUrls = Field(
+        default_factory=SpotifyExternalUrls,
+    )
+
+
+class SpotifyTopArtistsResponse(BaseModel):
+    items: list[SpotifyArtist] = Field(default_factory=list)
+    total: int
+    limit: int
+    offset: int
+    next: str | None = None
+    previous: str | None = None

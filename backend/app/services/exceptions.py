@@ -18,3 +18,16 @@ class AuthenticationPersistenceError(Exception):
         super().__init__(message)
 
         self.message = message
+
+
+class SpotifyReauthorizationRequiredError(SpotifyServiceError):
+    def __init__(
+        self,
+        message: str = (
+            "Spotify authorization expired. Please sign in again."
+        ),
+    ) -> None:
+        super().__init__(
+            message=message,
+            status_code=401,
+        )
