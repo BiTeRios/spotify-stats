@@ -12,8 +12,10 @@ import {
 
 import {
   getTopArtists,
+  getTopTracks,
   type TopArtistsResponse,
   type TopItemsTimeRange,
+  type TopTracksResponse,
 } from './api/stats'
 
 import ArtistCard from './components/ArtistCard'
@@ -21,6 +23,7 @@ import ArtistCardSkeleton from './components/ArtistCardSkeleton'
 import ProfileAvatar from './components/ProfileAvatar'
 import TimeRangeSwitcher from './components/TimeRangeSwitcher'
 import ArtistLimitSelector from './components/ArtistLimitSelector'
+import TrackItem from './components/TrackItem'
 
 type PageState =
   | { status: 'loading' }
@@ -49,6 +52,27 @@ type ArtistsState =
       status: 'error'
       message: string
     }
+
+type TracksState =
+  | {
+      status: 'loading'
+    }
+  | {
+      status: 'ready'
+      data: TopTracksResponse
+    }
+  | {
+      status: 'empty'
+    }
+  | {
+      status: 'error'
+      message: string
+    }
+
+const DEFAULT_TRACKS_TIME_RANGE: TopItemsTimeRange =
+  'medium_term'
+
+const TOP_TRACKS_LIMIT = 20
 
 const TIME_RANGE_DESCRIPTIONS: Record<
   TopItemsTimeRange,
@@ -81,6 +105,14 @@ function App() {
     })
 
   const [artistsReloadKey, setArtistsReloadKey] =
+    useState(0)
+
+  const [tracksState, setTracksState] =
+    useState<TracksState>({
+      status: 'loading',
+    })
+
+  const [tracksReloadKey, setTracksReloadKey] =
     useState(0)
 
   const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -195,6 +227,75 @@ function App() {
     artistsReloadKey,
   ])
 
+  useEffect(() => {
+    if (pageState.status !== 'ready') {
+      return
+    }
+
+    let isCancelled = false
+
+    async function loadTopTracks() {
+      setTracksState({
+        status: 'loading',
+      })
+
+      try {
+        const topTracks = await getTopTracks(
+          DEFAULT_TRACKS_TIME_RANGE,
+          TOP_TRACKS_LIMIT,
+        )
+
+        if (isCancelled) {
+          return
+        }
+
+        if (topTracks.items.length === 0) {
+          setTracksState({
+            status: 'empty',
+          })
+
+          return
+        }
+
+        setTracksState({
+          status: 'ready',
+          data: topTracks,
+        })
+      } catch (requestError) {
+        if (isCancelled) {
+          return
+        }
+
+        if (
+          requestError instanceof ApiRequestError
+          && requestError.status === 401
+        ) {
+          setPageState({
+            status: 'guest',
+          })
+
+          return
+        }
+
+        const message =
+          requestError instanceof Error
+            ? requestError.message
+            : 'Could not load your top tracks.'
+
+        setTracksState({
+          status: 'error',
+          message,
+        })
+      }
+    }
+
+    void loadTopTracks()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [pageState.status, tracksReloadKey])
+
   async function handleLogout() {
     setIsLoggingOut(true)
 
@@ -221,6 +322,12 @@ function App() {
 
   function handleRetryTopArtists() {
     setArtistsReloadKey(
+      (currentKey) => currentKey + 1,
+    )
+  }
+
+  function handleRetryTopTracks() {
+    setTracksReloadKey(
       (currentKey) => currentKey + 1,
     )
   }
@@ -528,6 +635,125 @@ function App() {
                 </div>
               )}
             </section>
+
+            <section
+              className="tracks-section"
+              aria-labelledby="top-tracks-title"
+              aria-busy={tracksState.status === 'loading'}
+            >
+              <div className="section-heading">
+                <div>
+                  <p className="eyebrow">
+                    Your favorite songs
+                  </p>
+
+                  <h2 id="top-tracks-title">
+                    Top tracks
+                  </h2>
+                </div>
+
+                <p>
+                  {
+                    TIME_RANGE_DESCRIPTIONS[
+                      DEFAULT_TRACKS_TIME_RANGE
+                    ]
+                  }
+                </p>
+              </div>
+
+              <p
+                className="sr-only"
+                aria-live="polite"
+              >
+                {
+                  tracksState.status === 'loading'
+                    ? 'Loading top tracks.'
+                    : ''
+                }
+              </p>
+
+              {tracksState.status === 'loading' && (
+                <div className="tracks-feedback">
+                  <span
+                    className="loader"
+                    aria-hidden="true"
+                  />
+
+                  <p>Loading your top tracks...</p>
+                </div>
+              )}
+
+              {tracksState.status === 'ready' && (
+                <>
+                  <p className="tracks-result-count">
+                    Showing {tracksState.data.items.length} of{' '}
+                    {tracksState.data.total} available tracks
+                  </p>
+
+                  <ol
+                    className="tracks-list"
+                    aria-label="Top tracks ranking"
+                  >
+                    {tracksState.data.items.map((track) => (
+                      <li
+                        className="tracks-list-item"
+                        key={track.spotify_id}
+                      >
+                        <TrackItem track={track} />
+                      </li>
+                    ))}
+                  </ol>
+                </>
+              )}
+
+              {tracksState.status === 'empty' && (
+                <div className="tracks-feedback">
+                  <p className="eyebrow">
+                    No data yet
+                  </p>
+
+                  <h3>
+                    No top tracks for this period.
+                  </h3>
+
+                  <p>
+                    Spotify did not return any favorite tracks
+                    for the selected time range.
+                  </p>
+                </div>
+              )}
+
+              {tracksState.status === 'error' && (
+                <div
+                  className="
+                    tracks-feedback
+                    tracks-feedback-error
+                  "
+                  role="alert"
+                >
+                  <p className="eyebrow">
+                    Could not load tracks
+                  </p>
+
+                  <h3>
+                    Your other statistics are still available.
+                  </h3>
+
+                  <p>
+                    {tracksState.message}
+                  </p>
+
+                  <button
+                    className="secondary-button"
+                    type="button"
+                    onClick={handleRetryTopTracks}
+                  >
+                    Try again
+                  </button>
+                </div>
+              )}
+            </section>
+
           </div>
         )}
       </section>

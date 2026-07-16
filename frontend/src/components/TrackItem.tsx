@@ -1,4 +1,5 @@
 import type { TopTrack } from '../api/stats'
+import { formatDuration } from '../utils/formatDuration'
 
 interface TrackItemProps {
   track: TopTrack
@@ -9,8 +10,19 @@ function TrackItem({ track }: TrackItemProps) {
     ? track.artist_names.join(', ')
     : 'Unknown artist'
 
+  const formattedDuration = formatDuration(
+    track.duration_ms,
+  )
+
   return (
     <article className="track-item">
+      <span
+        className="track-rank"
+        aria-label={`Rank ${track.rank}`}
+      >
+        #{track.rank}
+      </span>
+
       <div className="track-image-frame">
         {track.album_image_url ? (
           <img
@@ -39,6 +51,13 @@ function TrackItem({ track }: TrackItemProps) {
           {track.album_name}
         </p>
       </div>
+
+      <span
+        className="track-duration"
+        aria-label={`Duration ${formattedDuration}`}
+      >
+        {formattedDuration}
+      </span>
     </article>
   )
 }
