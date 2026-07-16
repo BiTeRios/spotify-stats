@@ -2,6 +2,7 @@ import type { TopItemsTimeRange } from '../api/stats'
 
 interface TimeRangeSwitcherProps {
   value: TopItemsTimeRange
+  ariaLabel: string
   onChange: (value: TopItemsTimeRange) => void
 }
 
@@ -25,13 +26,14 @@ const TIME_RANGE_OPTIONS: Array<{
 
 function TimeRangeSwitcher({
   value,
+  ariaLabel,
   onChange,
 }: TimeRangeSwitcherProps) {
   return (
     <div
       className="time-range-switcher"
       role="group"
-      aria-label="Top artists time range"
+      aria-label={ariaLabel}
     >
       {TIME_RANGE_OPTIONS.map((option) => {
         const isSelected = option.value === value

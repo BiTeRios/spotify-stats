@@ -1,29 +1,33 @@
-interface ArtistLimitSelectorProps {
+interface LimitSelectorProps {
   value: number
+  label: string
+  ariaLabel: string
   onChange: (value: number) => void
 }
 
-const ARTIST_LIMIT_OPTIONS = Array.from(
+const LIMIT_OPTIONS = Array.from(
   { length: 50 },
   (_, index) => index + 1,
 )
 
-function ArtistLimitSelector({
+function LimitSelector({
   value,
+  label,
+  ariaLabel,
   onChange,
-}: ArtistLimitSelectorProps) {
+}: LimitSelectorProps) {
   return (
-    <label className="artist-limit-selector">
-      <span>Artists</span>
+    <label className="limit-selector">
+      <span>{label}</span>
 
       <select
         value={value}
-        aria-label="Number of artists to display"
+        aria-label={ariaLabel}
         onChange={(event) => {
           onChange(Number(event.target.value))
         }}
       >
-        {ARTIST_LIMIT_OPTIONS.map((limit) => (
+        {LIMIT_OPTIONS.map((limit) => (
           <option
             key={limit}
             value={limit}
@@ -36,4 +40,4 @@ function ArtistLimitSelector({
   )
 }
 
-export default ArtistLimitSelector
+export default LimitSelector

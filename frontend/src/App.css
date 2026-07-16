@@ -380,17 +380,17 @@
     padding: 0 8px;
   }
 
-  .artists-controls {
+  .stats-controls {
     align-items: stretch;
     flex-direction: column;
     gap: 14px;
   }
 
-  .artist-limit-selector {
+  .limit-selector {
     width: 100%;
   }
 
-  .artist-limit-selector select {
+  .limit-selector select {
     width: 100%;
   }
 }
@@ -703,7 +703,7 @@
   border: 0;
 }
 
-.artists-controls {
+.stats-controls {
   display: flex;
   align-items: end;
   justify-content: space-between;
@@ -711,11 +711,11 @@
   margin-bottom: 26px;
 }
 
-.artists-controls .time-range-switcher {
+.stats-controls .time-range-switcher {
   margin-bottom: 0;
 }
 
-.artist-limit-selector {
+.limit-selector {
   display: grid;
   gap: 7px;
   color: #a7a7a7;
@@ -725,7 +725,7 @@
   text-transform: uppercase;
 }
 
-.artist-limit-selector select {
+.limit-selector select {
   min-width: 96px;
   height: 48px;
   padding: 0 38px 0 15px;
@@ -744,12 +744,12 @@
     background 160ms ease;
 }
 
-.artist-limit-selector select:hover {
+.limit-selector select:hover {
   border-color: rgba(30, 215, 96, 0.45);
   background: #181818;
 }
 
-.artist-limit-selector select:focus-visible {
+.limit-selector select:focus-visible {
   border-color: #1ed760;
   box-shadow: 0 0 0 3px rgba(30, 215, 96, 0.16);
 }
@@ -899,6 +899,7 @@
     46px
     76px
     minmax(0, 1fr)
+    52px
     auto;
   align-items: center;
   gap: 16px;
@@ -1041,6 +1042,46 @@
   border-color: rgba(255, 92, 92, 0.35);
 }
 
+.track-actions {
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.track-spotify-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(30, 215, 96, 0.28);
+  border-radius: 999px;
+  background: rgba(30, 215, 96, 0.08);
+  color: #1ed760;
+  font-size: 12px;
+  font-weight: 850;
+  text-decoration: none;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.track-spotify-link:hover {
+  border-color: rgba(30, 215, 96, 0.65);
+  background: #1ed760;
+  color: #000000;
+  transform: translateY(-1px);
+}
+
+.track-spotify-link:focus-visible {
+  outline: none;
+  border-color: #1ed760;
+  box-shadow: 0 0 0 3px rgba(30, 215, 96, 0.18);
+}
+
 @media (max-width: 640px) {
   .track-item {
     grid-template-columns:
@@ -1072,5 +1113,53 @@
 
   .track-album {
     font-size: 12px;
+  }
+}
+
+@media (max-width: 720px) {
+  .stats-controls {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .limit-selector {
+    width: 100%;
+  }
+
+  .limit-selector select {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .track-item {
+    grid-template-columns:
+      30px
+      58px
+      minmax(0, 1fr)
+      42px
+      36px;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .track-image-frame {
+    width: 58px;
+    height: 58px;
+  }
+
+  .track-duration {
+    min-width: 0;
+  }
+
+  .track-spotify-link {
+    width: 36px;
+    min-height: 36px;
+    padding: 0;
+  }
+
+  .track-spotify-link-text {
+    display: none;
   }
 }

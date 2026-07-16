@@ -58,6 +58,28 @@ function TrackItem({ track }: TrackItemProps) {
       >
         {formattedDuration}
       </span>
+
+      <div className="track-actions">
+        {track.spotify_url && (
+          <a
+            className="track-spotify-link"
+            href={track.spotify_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={
+              `Open ${track.name} by ${artistLabel} in Spotify`
+            }
+          >
+            <span className="track-spotify-link-text">
+              Spotify
+            </span>
+
+            <span aria-hidden="true">
+              ↗
+            </span>
+          </a>
+        )}
+      </div>
     </article>
   )
 }

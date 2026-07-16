@@ -22,7 +22,7 @@ import ArtistCard from './components/ArtistCard'
 import ArtistCardSkeleton from './components/ArtistCardSkeleton'
 import ProfileAvatar from './components/ProfileAvatar'
 import TimeRangeSwitcher from './components/TimeRangeSwitcher'
-import ArtistLimitSelector from './components/ArtistLimitSelector'
+import LimitSelector from './components/LimitSelector'
 import TrackItem from './components/TrackItem'
 
 type PageState =
@@ -69,11 +69,6 @@ type TracksState =
       message: string
     }
 
-const DEFAULT_TRACKS_TIME_RANGE: TopItemsTimeRange =
-  'medium_term'
-
-const TOP_TRACKS_LIMIT = 20
-
 const TIME_RANGE_DESCRIPTIONS: Record<
   TopItemsTimeRange,
   string
@@ -93,8 +88,10 @@ function App() {
     status: 'loading',
   })
 
-  const [selectedTimeRange, setSelectedTimeRange] =
-    useState<TopItemsTimeRange>('medium_term')
+  const [
+    selectedArtistTimeRange,
+    setSelectedArtistTimeRange,
+  ] = useState<TopItemsTimeRange>('medium_term')
 
   const [selectedArtistLimit, setSelectedArtistLimit] =
     useState(20)
@@ -106,6 +103,14 @@ function App() {
 
   const [artistsReloadKey, setArtistsReloadKey] =
     useState(0)
+
+  const [
+    selectedTrackTimeRange,
+    setSelectedTrackTimeRange,
+  ] = useState<TopItemsTimeRange>('medium_term')
+
+  const [selectedTrackLimit, setSelectedTrackLimit] =
+    useState(20)
 
   const [tracksState, setTracksState] =
     useState<TracksState>({
@@ -167,7 +172,7 @@ function App() {
 
       try {
         const topArtists = await getTopArtists(
-          selectedTimeRange,
+          selectedArtistTimeRange,
           selectedArtistLimit,
         )
 
@@ -222,7 +227,7 @@ function App() {
     }
   }, [
     pageState.status,
-    selectedTimeRange,
+    selectedArtistTimeRange,
     selectedArtistLimit,
     artistsReloadKey,
   ])
@@ -241,8 +246,8 @@ function App() {
 
       try {
         const topTracks = await getTopTracks(
-          DEFAULT_TRACKS_TIME_RANGE,
-          TOP_TRACKS_LIMIT,
+          selectedTrackTimeRange,
+          selectedTrackLimit,
         )
 
         if (isCancelled) {
@@ -294,7 +299,12 @@ function App() {
     return () => {
       isCancelled = true
     }
-  }, [pageState.status, tracksReloadKey])
+  }, [
+    pageState.status,
+    selectedTrackTimeRange,
+    selectedTrackLimit,
+    tracksReloadKey,
+  ])
 
   async function handleLogout() {
     setIsLoggingOut(true)
@@ -528,18 +538,21 @@ function App() {
                 </div>
 
                 <p>
-                  {TIME_RANGE_DESCRIPTIONS[selectedTimeRange]}
+                  {TIME_RANGE_DESCRIPTIONS[selectedArtistTimeRange]}
                 </p>
               </div>
 
-              <div className="artists-controls">
+              <div className="stats-controls">
                 <TimeRangeSwitcher
-                  value={selectedTimeRange}
-                  onChange={setSelectedTimeRange}
+                  value={selectedArtistTimeRange}
+                  ariaLabel="Top artists time range"
+                  onChange={setSelectedArtistTimeRange}
                 />
 
-                <ArtistLimitSelector
+                <LimitSelector
                   value={selectedArtistLimit}
+                  label="Artists"
+                  ariaLabel="Number of artists to display"
                   onChange={setSelectedArtistLimit}
                 />
               </div>
@@ -653,12 +666,23 @@ function App() {
                 </div>
 
                 <p>
-                  {
-                    TIME_RANGE_DESCRIPTIONS[
-                      DEFAULT_TRACKS_TIME_RANGE
-                    ]
-                  }
+                  {TIME_RANGE_DESCRIPTIONS[selectedTrackTimeRange]}
                 </p>
+              </div>
+
+              <div className="stats-controls">
+                <TimeRangeSwitcher
+                  value={selectedTrackTimeRange}
+                  ariaLabel="Top tracks time range"
+                  onChange={setSelectedTrackTimeRange}
+                />
+
+                <LimitSelector
+                  value={selectedTrackLimit}
+                  label="Tracks"
+                  ariaLabel="Number of tracks to display"
+                  onChange={setSelectedTrackLimit}
+                />
               </div>
 
               <p
@@ -753,7 +777,6 @@ function App() {
                 </div>
               )}
             </section>
-
           </div>
         )}
       </section>
