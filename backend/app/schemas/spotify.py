@@ -47,3 +47,36 @@ class SpotifyTopArtistsResponse(BaseModel):
     offset: int
     next: str | None = None
     previous: str | None = None
+
+
+class SpotifySimplifiedArtist(BaseModel):
+    id: str
+    name: str
+
+
+class SpotifyAlbum(BaseModel):
+    id: str
+    name: str
+    images: list[SpotifyImage] = Field(default_factory=list)
+
+
+class SpotifyTrack(BaseModel):
+    id: str
+    name: str
+    artists: list[SpotifySimplifiedArtist] = Field(
+        default_factory=list,
+    )
+    album: SpotifyAlbum
+    duration_ms: int
+    external_urls: SpotifyExternalUrls = Field(
+        default_factory=SpotifyExternalUrls,
+    )
+
+
+class SpotifyTopTracksResponse(BaseModel):
+    items: list[SpotifyTrack] = Field(default_factory=list)
+    total: int
+    limit: int
+    offset: int
+    next: str | None = None
+    previous: str | None = None

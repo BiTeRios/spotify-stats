@@ -24,3 +24,20 @@ class TopArtistsResponse(BaseModel):
     limit: int
     total: int
     items: list[TopArtistResponse] = Field(default_factory=list)
+
+class TopTrackResponse(BaseModel):
+    rank: int
+    spotify_id: str
+    name: str
+    artist_names: list[str] = Field(default_factory=list)
+    album_name: str
+    album_image_url: str | None = None
+    duration_ms: int
+    spotify_url: str | None = None
+
+
+class TopTracksResponse(BaseModel):
+    time_range: TopItemsTimeRange
+    limit: int
+    total: int
+    items: list[TopTrackResponse] = Field(default_factory=list)

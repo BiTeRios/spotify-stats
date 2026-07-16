@@ -7,6 +7,7 @@ from app.core.config import settings
 from app.schemas.spotify import (
     SpotifyProfileResponse,
     SpotifyTopArtistsResponse,
+    SpotifyTopTracksResponse,
 )
 from app.services.exceptions import SpotifyServiceError
 
@@ -114,5 +115,27 @@ async def get_top_spotify_artists(
     except ValidationError as exc:
         raise SpotifyServiceError(
             message="Spotify returned an invalid top artists response.",
+            status_code=502,
+        ) from exc
+    
+async def get_top_spotify_tracks(
+    access_token: str,
+    time_range: str = "medium_term",
+    limit: int = 20,
+) -> SpotifyTopTracksResponse:
+    response_data = await get_spotify_api_data(
+        access_token=access_token,
+        endpoint="/me/top/tracks",
+        params={
+            "time_range": time_range,
+            "limit": limit,
+        },
+    )
+
+    try:
+        return SpotifyTopTracksResponse(**response_data)
+    except ValidationError as exc:
+        raise SpotifyServiceError(
+            message="Spotify returned an invalid top tracks response.",
             status_code=502,
         ) from exc
