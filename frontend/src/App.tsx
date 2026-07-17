@@ -31,6 +31,8 @@ import TrackItem from './components/TrackItem'
 import HistoryPage from './pages/HistoryPage'
 import CurrentTrackCard from './components/CurrentTrackCard'
 import AppLayout from './layouts/AppLayout'
+import ProfileSkeleton from './components/ProfileSkeleton'
+import TrackItemSkeleton from './components/TrackItemSkeleton'
 
 type PageState =
   | { status: 'loading' }
@@ -361,23 +363,16 @@ function App() {
     >
       <section className="profile-page">
         {pageState.status === 'loading' && (
-          <div
-            className="status-panel"
-            aria-live="polite"
-          >
-            <span
-              className="loader"
-              aria-hidden="true"
-            />
-
-            <p className="status-label">
-              Loading your Spotify profile
+          <>
+            <p
+              className="sr-only"
+              aria-live="polite"
+            >
+              Loading your Spotify profile.
             </p>
 
-            <p className="status-description">
-              Connecting securely to your account...
-            </p>
-          </div>
+            <ProfileSkeleton />
+          </>
         )}
 
         {pageState.status === 'guest' && (
@@ -706,14 +701,27 @@ function App() {
               </p>
 
               {tracksState.status === 'loading' && (
-                <div className="tracks-feedback">
-                  <span
-                    className="loader"
-                    aria-hidden="true"
-                  />
-
-                  <p>Loading your top tracks...</p>
-                </div>
+                <ol
+                  className="tracks-list"
+                  aria-hidden="true"
+                >
+                  {Array.from(
+                    {
+                      length: Math.min(
+                        selectedTrackLimit,
+                        8,
+                      ),
+                    },
+                    (_, index) => (
+                      <li
+                        className="tracks-list-item"
+                        key={index}
+                      >
+                        <TrackItemSkeleton />
+                      </li>
+                    ),
+                  )}
+                </ol>
               )}
 
               {tracksState.status === 'ready' && (

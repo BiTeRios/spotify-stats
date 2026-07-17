@@ -289,9 +289,9 @@ Current progress:
 * [x] User profile implemented
 * [x] Top artists implemented
 * [x] Top tracks implemented
-* [ ] Recently played tracks implemented
-* [ ] Currently playing track implemented
-* [ ] Docker configuration added
+* [x] Recently played tracks implemented
+* [x] Currently playing track implemented
+* [x] Docker configuration added
 * [ ] Production deployment completed
 
 ## Development Rules

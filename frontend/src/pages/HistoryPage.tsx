@@ -11,6 +11,8 @@ import {
   getUserTimeZone,
 } from '../utils/formatPlayedAt'
 
+import HistoryItemSkeleton from '../components/HistoryItemSkeleton'
+
 type HistoryState =
   | {
       status: 'loading'
@@ -197,16 +199,24 @@ function HistoryPage({
       </p>
 
       {historyState.status === 'loading' && (
-        <div className="history-feedback">
-          <span
-            className="loader"
-            aria-hidden="true"
-          />
-
-          <p>
-            Loading your listening history...
-          </p>
-        </div>
+        <ol
+          className="history-list"
+          aria-hidden="true"
+        >
+          {Array.from(
+            {
+              length: 6,
+            },
+            (_, index) => (
+              <li
+                className="history-list-item"
+                key={index}
+              >
+                <HistoryItemSkeleton />
+              </li>
+            ),
+          )}
+        </ol>
       )}
 
       {historyState.status === 'ready' && (

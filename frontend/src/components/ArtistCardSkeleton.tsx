@@ -1,17 +1,19 @@
+import Skeleton from './Skeleton'
+
 function ArtistCardSkeleton() {
   return (
     <article
       className="artist-card artist-card-skeleton"
       aria-hidden="true"
     >
-      <div className="skeleton-block skeleton-artist-image" />
+      <Skeleton className="skeleton-artist-image" />
 
       <div className="artist-card-content">
-        <div className="skeleton-block skeleton-artist-name" />
+        <Skeleton className="skeleton-artist-name" />
 
-        <div className="skeleton-block skeleton-artist-genres" />
+        <Skeleton className="skeleton-artist-genres" />
 
-        <div className="skeleton-block skeleton-artist-link" />
+        <Skeleton className="skeleton-artist-link" />
       </div>
     </article>
   )

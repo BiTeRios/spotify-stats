@@ -6,6 +6,7 @@ import {
 } from '../api/player'
 import { ApiRequestError } from '../api/client'
 import { formatDuration } from '../utils/formatDuration'
+import CurrentTrackSkeleton from './CurrentTrackSkeleton'
 
 const POLL_INTERVAL_MS = 2_000
 const ERROR_RETRY_INTERVAL_MS = 60_000
@@ -214,16 +215,16 @@ function CurrentTrackCard({
       </div>
 
       {playbackState.status === 'loading' && (
-        <div className="current-track-feedback">
-          <span
-            className="loader"
-            aria-hidden="true"
-          />
-
-          <p>
-            Checking your Spotify player...
+        <>
+          <p
+            className="sr-only"
+            aria-live="polite"
+          >
+            Checking your Spotify player.
           </p>
-        </div>
+
+          <CurrentTrackSkeleton />
+        </>
       )}
 
       {playbackState.status === 'empty' && (

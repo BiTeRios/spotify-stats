@@ -29,7 +29,9 @@ function AppLayout({
               <span />
             </span>
 
-            <span>Spotify Stats</span>
+            <span className="brand-text">
+              Spotify Stats
+            </span>
           </a>
 
           {showNavigation && <MainNavigation />}

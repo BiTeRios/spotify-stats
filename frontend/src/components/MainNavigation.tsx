@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react'
+import {
+  useEffect,
+  useState,
+} from 'react'
 
 const NAVIGATION_ITEMS = [
   {
@@ -23,9 +26,14 @@ const NAVIGATION_ITEMS = [
   },
 ] as const
 
+const DESKTOP_NAVIGATION_BREAKPOINT = 860
+
 function MainNavigation() {
   const [activeSection, setActiveSection] =
     useState('overview')
+
+  const [isMenuOpen, setIsMenuOpen] =
+    useState(false)
 
   useEffect(() => {
     const sections = NAVIGATION_ITEMS
@@ -68,33 +76,110 @@ function MainNavigation() {
     }
   }, [])
 
-  return (
-    <nav
-      className="main-navigation"
-      aria-label="Main navigation"
-    >
-      {NAVIGATION_ITEMS.map((item) => {
-        const isActive = activeSection === item.id
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false)
+      }
+    }
 
-        return (
-          <a
-            className={
-              isActive
-                ? 'navigation-link navigation-link-active'
-                : 'navigation-link'
-            }
-            href={`#${item.id}`}
-            aria-current={
-              isActive ? 'location' : undefined
-            }
-            key={item.id}
-            onClick={() => setActiveSection(item.id)}
-          >
-            {item.label}
-          </a>
-        )
-      })}
-    </nav>
+    function handleResize() {
+      if (
+        window.innerWidth
+        > DESKTOP_NAVIGATION_BREAKPOINT
+      ) {
+        setIsMenuOpen(false)
+      }
+    }
+
+    document.addEventListener(
+      'keydown',
+      handleKeyDown,
+    )
+
+    window.addEventListener(
+      'resize',
+      handleResize,
+    )
+
+    return () => {
+      document.removeEventListener(
+        'keydown',
+        handleKeyDown,
+      )
+
+      window.removeEventListener(
+        'resize',
+        handleResize,
+      )
+    }
+  }, [])
+
+  function handleNavigationClick(sectionId: string) {
+    setActiveSection(sectionId)
+    setIsMenuOpen(false)
+  }
+
+  return (
+    <div className="navigation-shell">
+      <button
+        className={
+          isMenuOpen
+            ? 'menu-toggle menu-toggle-open'
+            : 'menu-toggle'
+        }
+        type="button"
+        aria-expanded={isMenuOpen}
+        aria-controls="main-navigation"
+        aria-label={
+          isMenuOpen
+            ? 'Close navigation menu'
+            : 'Open navigation menu'
+        }
+        onClick={() => {
+          setIsMenuOpen((currentValue) => !currentValue)
+        }}
+      >
+        <span />
+        <span />
+        <span />
+      </button>
+
+      <nav
+        id="main-navigation"
+        className={
+          isMenuOpen
+            ? 'main-navigation main-navigation-open'
+            : 'main-navigation'
+        }
+        aria-label="Main navigation"
+      >
+        {NAVIGATION_ITEMS.map((item) => {
+          const isActive =
+            activeSection === item.id
+
+          return (
+            <a
+              className={
+                isActive
+                  ? 'navigation-link navigation-link-active'
+                  : 'navigation-link'
+              }
+              href={`#${item.id}`}
+              aria-current={
+                isActive ? 'location' : undefined
+              }
+              key={item.id}
+              onClick={() => {
+                handleNavigationClick(item.id)
+              }}
+            >
+              {item.label}
+            </a>
+          )
+        })}
+      </nav>
+    </div>
   )
 }
 
