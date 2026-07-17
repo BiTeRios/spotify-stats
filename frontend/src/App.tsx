@@ -553,6 +553,8 @@ function App() {
                   value={selectedArtistLimit}
                   label="Artists"
                   ariaLabel="Number of artists to display"
+                  min={1}
+                  max={50}
                   onChange={setSelectedArtistLimit}
                 />
               </div>
@@ -681,6 +683,8 @@ function App() {
                   value={selectedTrackLimit}
                   label="Tracks"
                   ariaLabel="Number of tracks to display"
+                  min={1}
+                  max={5000}
                   onChange={setSelectedTrackLimit}
                 />
               </div>

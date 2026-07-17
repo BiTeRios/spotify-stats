@@ -725,10 +725,16 @@
   text-transform: uppercase;
 }
 
-.limit-selector select {
-  min-width: 96px;
+.limit-selector-control {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.limit-selector input {
+  width: 130px;
   height: 48px;
-  padding: 0 38px 0 15px;
+  padding: 0 14px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   outline: none;
@@ -737,21 +743,55 @@
   font: inherit;
   font-size: 14px;
   font-weight: 800;
-  cursor: pointer;
   text-transform: none;
   transition:
     border-color 160ms ease,
     background 160ms ease;
 }
 
-.limit-selector select:hover {
+.limit-selector input:hover {
   border-color: rgba(30, 215, 96, 0.45);
   background: #181818;
 }
 
-.limit-selector select:focus-visible {
+.limit-selector input:focus-visible {
   border-color: #1ed760;
   box-shadow: 0 0 0 3px rgba(30, 215, 96, 0.16);
+}
+
+.limit-selector-control button {
+  min-height: 48px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  background: #1ed760;
+  color: #000000;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 850;
+  cursor: pointer;
+  text-transform: none;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.limit-selector-control button:hover {
+  background: #3be477;
+  transform: translateY(-1px);
+}
+
+.limit-selector-control button:focus-visible {
+  outline: 3px solid rgba(30, 215, 96, 0.25);
+  outline-offset: 2px;
+}
+
+.limit-selector-hint {
+  color: #737373;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .artists-result-count {
@@ -1129,6 +1169,16 @@
 
   .limit-selector select {
     width: 100%;
+  }
+
+  .limit-selector-control {
+    width: 100%;
+  }
+
+  .limit-selector input {
+    flex: 1;
+    width: auto;
+    min-width: 0;
   }
 }
 

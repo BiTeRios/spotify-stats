@@ -33,6 +33,8 @@ router = APIRouter(
     tags=["Statistics"],
 )
 
+MAX_TOP_TRACKS_LIMIT = 5000
+
 
 @router.get(
     "/top-artists",
@@ -112,8 +114,11 @@ async def get_top_tracks(
         int,
         Query(
             ge=1,
-            le=50,
-            description="Number of tracks to return.",
+            le=MAX_TOP_TRACKS_LIMIT,
+            description=(
+                "Total number of tracks to return. "
+                "Spotify pages are loaded in batches of 50."
+            ),
         ),
     ] = 20,
 ) -> TopTracksResponse:

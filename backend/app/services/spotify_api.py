@@ -118,10 +118,14 @@ async def get_top_spotify_artists(
             status_code=502,
         ) from exc
     
-async def get_top_spotify_tracks(
+SPOTIFY_TOP_ITEMS_PAGE_SIZE = 50
+
+
+async def get_top_spotify_tracks_page(
     access_token: str,
-    time_range: str = "medium_term",
-    limit: int = 20,
+    time_range: str,
+    limit: int,
+    offset: int,
 ) -> SpotifyTopTracksResponse:
     response_data = await get_spotify_api_data(
         access_token=access_token,
@@ -129,6 +133,7 @@ async def get_top_spotify_tracks(
         params={
             "time_range": time_range,
             "limit": limit,
+            "offset": offset,
         },
     )
 
@@ -139,3 +144,54 @@ async def get_top_spotify_tracks(
             message="Spotify returned an invalid top tracks response.",
             status_code=502,
         ) from exc
+
+
+async def get_top_spotify_tracks(
+    access_token: str,
+    time_range: str = "medium_term",
+    limit: int = 20,
+) -> SpotifyTopTracksResponse:
+    collected_tracks = []
+    offset = 0
+    total = 0
+
+    while len(collected_tracks) < limit:
+        remaining_tracks = limit - len(collected_tracks)
+
+        page_limit = min(
+            SPOTIFY_TOP_ITEMS_PAGE_SIZE,
+            remaining_tracks,
+        )
+
+        page = await get_top_spotify_tracks_page(
+            access_token=access_token,
+            time_range=time_range,
+            limit=page_limit,
+            offset=offset,
+        )
+
+        if offset == 0:
+            total = page.total
+
+        if not page.items:
+            break
+
+        collected_tracks.extend(page.items)
+        offset += len(page.items)
+
+        if page.next is None:
+            break
+
+        if offset >= total:
+            break
+
+    requested_tracks = collected_tracks[:limit]
+
+    return SpotifyTopTracksResponse(
+        items=requested_tracks,
+        total=total,
+        limit=len(requested_tracks),
+        offset=0,
+        next=None,
+        previous=None,
+    )
