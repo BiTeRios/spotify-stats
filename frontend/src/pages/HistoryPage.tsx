@@ -124,7 +124,8 @@ function HistoryPage({
 
   return (
     <section
-      className="history-section"
+      id="history"
+      className="history-section dashboard-anchor"
       aria-labelledby="recent-history-title"
       aria-busy={
         historyState.status === 'loading'

@@ -191,7 +191,8 @@ function CurrentTrackCard({
 
   return (
     <section
-      className="current-track-section"
+      id="now-playing"
+      className="current-track-section dashboard-anchor"
       aria-labelledby="current-track-title"
       aria-busy={playbackState.status === 'loading'}
     >

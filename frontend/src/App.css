@@ -15,13 +15,22 @@
 }
 
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  min-height: 76px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(18px);
+}
+
+.topbar-inner {
   display: flex;
   align-items: center;
+  gap: 28px;
+  width: min(1180px, calc(100% - 48px));
   min-height: 76px;
-  padding: 0 7vw;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(18px);
+  margin: 0 auto;
 }
 
 .brand {
@@ -60,6 +69,56 @@
 
 .brand-mark span:nth-child(3) {
   width: 68%;
+}
+
+.main-navigation {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  margin-left: auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.main-navigation::-webkit-scrollbar {
+  display: none;
+}
+
+.navigation-link {
+  flex: 0 0 auto;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: #a7a7a7;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    color 160ms ease,
+    background 160ms ease;
+}
+
+.navigation-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.navigation-link-active {
+  color: #000000;
+  background: #1ed760;
+}
+
+.navigation-link-active:hover {
+  color: #000000;
+  background: #3be477;
+}
+
+.app-main {
+  min-width: 0;
+}
+
+.dashboard-anchor {
+  scroll-margin-top: 104px;
 }
 
 .profile-page {
@@ -318,7 +377,11 @@
 @media (max-width: 720px) {
   .topbar {
     min-height: 66px;
-    padding: 0 22px;
+  }
+
+  .topbar-inner {
+    width: calc(100% - 32px);
+    min-height: 66px;
   }
 
   .profile-page {

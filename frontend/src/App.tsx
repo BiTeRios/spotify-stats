@@ -30,6 +30,7 @@ import LimitSelector from './components/LimitSelector'
 import TrackItem from './components/TrackItem'
 import HistoryPage from './pages/HistoryPage'
 import CurrentTrackCard from './components/CurrentTrackCard'
+import AppLayout from './layouts/AppLayout'
 
 type PageState =
   | { status: 'loading' }
@@ -355,26 +356,9 @@ function App() {
   }
 
   return (
-    <main className="app-shell">
-      <header className="topbar">
-        <a
-          className="brand"
-          href="/"
-          aria-label="Spotify Stats home"
-        >
-          <span
-            className="brand-mark"
-            aria-hidden="true"
-          >
-            <span />
-            <span />
-            <span />
-          </span>
-
-          <span>Spotify Stats</span>
-        </a>
-      </header>
-
+    <AppLayout
+      showNavigation={pageState.status === 'ready'}
+    >
       <section className="profile-page">
         {pageState.status === 'loading' && (
           <div
@@ -453,7 +437,10 @@ function App() {
 
         {pageState.status === 'ready' && (
           <div className="dashboard-content">
-            <article className="profile-card">
+            <article
+              id="overview"
+              className="profile-card dashboard-anchor"
+            >
               <div className="profile-hero">
                 <div className="profile-avatar-frame">
                   <ProfileAvatar
@@ -538,7 +525,8 @@ function App() {
             />
 
             <section
-              className="artists-section"
+              id="top-artists"
+              className="artists-section dashboard-anchor"
               aria-labelledby="top-artists-title"
               aria-busy={artistsState.status === 'loading'}
             >
@@ -668,7 +656,8 @@ function App() {
             </section>
 
             <section
-              className="tracks-section"
+              id="top-tracks"
+              className="tracks-section dashboard-anchor"
               aria-labelledby="top-tracks-title"
               aria-busy={tracksState.status === 'loading'}
             >
@@ -803,7 +792,7 @@ function App() {
           </div>
         )}
       </section>
-    </main>
+    </AppLayout>
   )
 }
 
