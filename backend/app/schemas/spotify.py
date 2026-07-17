@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 
@@ -80,3 +82,15 @@ class SpotifyTopTracksResponse(BaseModel):
     offset: int
     next: str | None = None
     previous: str | None = None
+
+
+class SpotifyPlayHistoryItem(BaseModel):
+    track: SpotifyTrack
+    played_at: datetime
+
+
+class SpotifyRecentlyPlayedResponse(BaseModel):
+    items: list[SpotifyPlayHistoryItem] = Field(
+        default_factory=list,
+    )
+    limit: int

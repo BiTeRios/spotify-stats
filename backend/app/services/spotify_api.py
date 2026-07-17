@@ -6,6 +6,7 @@ from pydantic import ValidationError
 from app.core.config import settings
 from app.schemas.spotify import (
     SpotifyProfileResponse,
+    SpotifyRecentlyPlayedResponse,
     SpotifyTopArtistsResponse,
     SpotifyTopTracksResponse,
 )
@@ -195,3 +196,28 @@ async def get_top_spotify_tracks(
         next=None,
         previous=None,
     )
+
+async def get_recently_played_spotify_tracks(
+    access_token: str,
+    limit: int = 50,
+) -> SpotifyRecentlyPlayedResponse:
+    response_data = await get_spotify_api_data(
+        access_token=access_token,
+        endpoint="/me/player/recently-played",
+        params={
+            "limit": limit,
+        },
+    )
+
+    try:
+        return SpotifyRecentlyPlayedResponse(
+            **response_data,
+        )
+    except ValidationError as exc:
+        raise SpotifyServiceError(
+            message=(
+                "Spotify returned an invalid "
+                "recently played response."
+            ),
+            status_code=502,
+        ) from exc

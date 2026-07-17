@@ -286,9 +286,9 @@ Current progress:
 * [x] Frontend connected to backend
 * [x] Spotify Developer application configured
 * [x] Spotify authentication implemented
-* [ ] User profile implemented
-* [ ] Top artists implemented
-* [ ] Top tracks implemented
+* [x] User profile implemented
+* [x] Top artists implemented
+* [x] Top tracks implemented
 * [ ] Recently played tracks implemented
 * [ ] Currently playing track implemented
 * [ ] Docker configuration added
