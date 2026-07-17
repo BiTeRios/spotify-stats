@@ -1,4 +1,8 @@
-import { useEffect, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 
 import './App.css'
 
@@ -24,6 +28,7 @@ import ProfileAvatar from './components/ProfileAvatar'
 import TimeRangeSwitcher from './components/TimeRangeSwitcher'
 import LimitSelector from './components/LimitSelector'
 import TrackItem from './components/TrackItem'
+import HistoryPage from './pages/HistoryPage'
 
 type PageState =
   | { status: 'loading' }
@@ -305,6 +310,12 @@ function App() {
     selectedTrackLimit,
     tracksReloadKey,
   ])
+
+  const handleUnauthorized = useCallback(() => {
+    setPageState({
+      status: 'guest',
+    })
+  }, [])
 
   async function handleLogout() {
     setIsLoggingOut(true)
@@ -781,6 +792,9 @@ function App() {
                 </div>
               )}
             </section>
+            <HistoryPage
+              onUnauthorized={handleUnauthorized}
+            />
           </div>
         )}
       </section>
