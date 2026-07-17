@@ -1554,3 +1554,356 @@
     animation: none;
   }
 }
+
+.current-track-section {
+  padding: clamp(22px, 3vw, 32px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  background: rgba(18, 18, 18, 0.94);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+}
+
+.current-track-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.current-track-heading h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(26px, 3vw, 36px);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.current-track-heading > p {
+  max-width: 390px;
+  margin: 0;
+  color: #8f8f8f;
+  font-size: 13px;
+  line-height: 1.55;
+  text-align: right;
+}
+
+.current-track-card {
+  display: grid;
+  grid-template-columns:
+    112px
+    minmax(0, 1fr)
+    auto;
+  align-items: center;
+  gap: 22px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(30, 215, 96, 0.22);
+  border-radius: 18px;
+  background:
+    linear-gradient(
+      110deg,
+      rgba(30, 215, 96, 0.12),
+      transparent 48%
+    ),
+    #181818;
+}
+
+.current-track-image-frame {
+  width: 112px;
+  height: 112px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #282828;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
+}
+
+.current-track-image,
+.current-track-image-fallback {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.current-track-image {
+  object-fit: cover;
+}
+
+.current-track-image-fallback {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(
+      circle at 35% 25%,
+      rgba(30, 215, 96, 0.24),
+      transparent 44%
+    ),
+    linear-gradient(
+      145deg,
+      #333333,
+      #171717
+    );
+  color: #1ed760;
+  font-size: 42px;
+  font-weight: 850;
+}
+
+.current-track-content {
+  min-width: 0;
+}
+
+.current-track-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.current-track-title-row > div {
+  min-width: 0;
+}
+
+.current-track-content h3,
+.current-track-artists,
+.current-track-album {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.current-track-content h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(20px, 2.4vw, 28px);
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.current-track-artists,
+.current-track-album {
+  margin: 0;
+}
+
+.current-track-artists {
+  margin-top: 7px;
+  color: #d0d0d0;
+  font-size: 14px;
+}
+
+.current-track-album {
+  margin-top: 5px;
+  color: #858585;
+  font-size: 13px;
+}
+
+.playback-status {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 0 11px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 999px;
+  color: #b3b3b3;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.playback-status > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #858585;
+}
+
+.playback-status.is-playing {
+  border-color: rgba(30, 215, 96, 0.32);
+  color: #1ed760;
+}
+
+.playback-status.is-playing > span {
+  background: #1ed760;
+  box-shadow:
+    0 0 0 5px rgba(30, 215, 96, 0.1);
+}
+
+.current-track-progress-group {
+  margin-top: 18px;
+}
+
+.current-track-progress {
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #3f3f3f;
+}
+
+.current-track-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #1ed760;
+  transition: width 240ms linear;
+}
+
+.current-track-time {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 7px;
+  color: #929292;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.current-track-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 17px;
+  border: 1px solid rgba(30, 215, 96, 0.4);
+  border-radius: 999px;
+  color: #1ed760;
+  font-size: 12px;
+  font-weight: 850;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.current-track-link:hover {
+  border-color: #1ed760;
+  background: #1ed760;
+  color: #000000;
+  transform: translateY(-1px);
+}
+
+.current-track-feedback {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 112px;
+  padding: 22px;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.current-track-feedback .loader {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.current-track-feedback h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.current-track-feedback p {
+  margin: 7px 0 0;
+  color: #9d9d9d;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.current-track-idle-icon {
+  display: grid;
+  flex: 0 0 52px;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(30, 215, 96, 0.11);
+  color: #1ed760;
+  font-size: 25px;
+  font-weight: 850;
+}
+
+.current-track-error {
+  border-color: rgba(255, 92, 92, 0.3);
+}
+
+.current-track-error .current-track-idle-icon {
+  background: rgba(255, 92, 92, 0.1);
+  color: #ff7777;
+}
+
+.current-track-retry-note {
+  color: #737373 !important;
+  font-size: 12px !important;
+}
+
+@media (max-width: 820px) {
+  .current-track-card {
+    grid-template-columns:
+      92px
+      minmax(0, 1fr);
+  }
+
+  .current-track-image-frame {
+    width: 92px;
+    height: 92px;
+  }
+
+  .current-track-link {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
+
+@media (max-width: 720px) {
+  .current-track-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .current-track-heading > p {
+    text-align: left;
+  }
+}
+
+@media (max-width: 520px) {
+  .current-track-section {
+    padding: 18px;
+  }
+
+  .current-track-card {
+    grid-template-columns:
+      72px
+      minmax(0, 1fr);
+    gap: 13px;
+    padding: 12px;
+  }
+
+  .current-track-image-frame {
+    width: 72px;
+    height: 72px;
+  }
+
+  .current-track-title-row {
+    display: block;
+  }
+
+  .current-track-content h3 {
+    font-size: 18px;
+  }
+
+  .playback-status {
+    margin-top: 10px;
+  }
+
+  .current-track-feedback {
+    align-items: flex-start;
+    padding: 18px;
+  }
+}

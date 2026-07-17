@@ -29,6 +29,7 @@ import TimeRangeSwitcher from './components/TimeRangeSwitcher'
 import LimitSelector from './components/LimitSelector'
 import TrackItem from './components/TrackItem'
 import HistoryPage from './pages/HistoryPage'
+import CurrentTrackCard from './components/CurrentTrackCard'
 
 type PageState =
   | { status: 'loading' }
@@ -531,6 +532,10 @@ function App() {
                 </div>
               </div>
             </article>
+
+            <CurrentTrackCard
+              onUnauthorized={handleUnauthorized}
+            />
 
             <section
               className="artists-section"
