@@ -5,6 +5,7 @@ from pydantic import ValidationError
 
 from app.core.config import settings
 from app.schemas.spotify import (
+    SpotifyCurrentlyPlayingResponse,
     SpotifyProfileResponse,
     SpotifyRecentlyPlayedResponse,
     SpotifyTopArtistsResponse,
@@ -16,11 +17,11 @@ from app.services.exceptions import SpotifyServiceError
 SPOTIFY_API_BASE_URL = "https://api.spotify.com/v1"
 
 
-async def get_spotify_api_data(
+async def get_spotify_api_response(
     access_token: str,
     endpoint: str,
     params: dict[str, str | int] | None = None,
-) -> dict[str, Any]:
+) -> httpx.Response:
     try:
         async with httpx.AsyncClient(
             base_url=SPOTIFY_API_BASE_URL,
@@ -53,7 +54,10 @@ async def get_spotify_api_data(
 
     if response.status_code == 429:
         raise SpotifyServiceError(
-            message="Spotify request limit was reached. Try again later.",
+            message=(
+                "Spotify request limit was reached. "
+                "Try again later."
+            ),
             status_code=503,
         )
 
@@ -62,6 +66,20 @@ async def get_spotify_api_data(
             message="Spotify Web API request failed.",
             status_code=502,
         )
+
+    return response
+
+
+async def get_spotify_api_data(
+    access_token: str,
+    endpoint: str,
+    params: dict[str, str | int] | None = None,
+) -> dict[str, Any]:
+    response = await get_spotify_api_response(
+        access_token=access_token,
+        endpoint=endpoint,
+        params=params,
+    )
 
     try:
         response_data = response.json()
@@ -73,7 +91,10 @@ async def get_spotify_api_data(
 
     if not isinstance(response_data, dict):
         raise SpotifyServiceError(
-            message="Spotify returned an unexpected response format.",
+            message=(
+                "Spotify returned an unexpected "
+                "response format."
+            ),
             status_code=502,
         )
 
@@ -218,6 +239,50 @@ async def get_recently_played_spotify_tracks(
             message=(
                 "Spotify returned an invalid "
                 "recently played response."
+            ),
+            status_code=502,
+        ) from exc
+    
+async def get_currently_playing_spotify_track(
+    access_token: str,
+) -> SpotifyCurrentlyPlayingResponse | None:
+    response = await get_spotify_api_response(
+        access_token=access_token,
+        endpoint="/me/player/currently-playing",
+    )
+
+    if response.status_code == 204 or not response.content:
+        return None
+
+    try:
+        response_data = response.json()
+    except ValueError as exc:
+        raise SpotifyServiceError(
+            message=(
+                "Spotify returned an invalid "
+                "currently playing response."
+            ),
+            status_code=502,
+        ) from exc
+
+    if not isinstance(response_data, dict):
+        raise SpotifyServiceError(
+            message=(
+                "Spotify returned an unexpected "
+                "currently playing response format."
+            ),
+            status_code=502,
+        )
+
+    try:
+        return SpotifyCurrentlyPlayingResponse(
+            **response_data,
+        )
+    except ValidationError as exc:
+        raise SpotifyServiceError(
+            message=(
+                "Spotify returned an invalid "
+                "currently playing response."
             ),
             status_code=502,
         ) from exc

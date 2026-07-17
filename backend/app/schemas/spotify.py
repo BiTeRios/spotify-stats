@@ -94,3 +94,10 @@ class SpotifyRecentlyPlayedResponse(BaseModel):
         default_factory=list,
     )
     limit: int
+
+class SpotifyCurrentlyPlayingResponse(BaseModel):
+    timestamp: int | None = None
+    progress_ms: int | None = None
+    is_playing: bool = False
+    item: SpotifyTrack | None = None
+    currently_playing_type: str | None = None
