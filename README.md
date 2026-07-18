@@ -177,11 +177,9 @@ Docker Compose is the recommended way to run the project.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/statsclever.git
+git clone https://github.com/BiTeRios/statsclever.git
 cd statsclever
 ```
-
-Replace `YOUR_USERNAME` with your GitHub username.
 
 ### 2. Configure the Spotify application
 
