@@ -1,9 +1,22 @@
-import { useEffect, useState } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 import {
   getCurrentPlayback,
   type CurrentPlaybackResponse,
 } from '../api/player'
+
+import {
+  useNotifications,
+} from '../contexts/NotificationContext'
+
+import {
+  getUserFacingError,
+} from '../utils/getUserFacingError'
+
 import { ApiRequestError } from '../api/client'
 import { formatDuration } from '../utils/formatDuration'
 import CurrentTrackSkeleton from './CurrentTrackSkeleton'
@@ -40,6 +53,12 @@ function isAbortError(error: unknown): boolean {
 function CurrentTrackCard({
   onUnauthorized,
 }: CurrentTrackCardProps) {
+  const {
+    showNotification,
+  } = useNotifications()
+
+  const hasShownPlaybackError = useRef(false)
+
   const [playbackState, setPlaybackState] =
     useState<CurrentPlaybackState>({
       status: 'loading',
@@ -101,6 +120,8 @@ function CurrentTrackCard({
           return
         }
 
+        hasShownPlaybackError.current = false
+
         if (!playback.is_active || !playback.track) {
           setPlaybackState({
             status: 'empty',
@@ -129,10 +150,22 @@ function CurrentTrackCard({
 
         nextRefreshDelay = ERROR_RETRY_INTERVAL_MS
 
-        const message =
-          requestError instanceof Error
-            ? requestError.message
-            : 'Could not load the current track.'
+        const message = getUserFacingError(
+          requestError,
+          'Could not load the current track.',
+        )
+
+        if (!hasShownPlaybackError.current) {
+          showNotification({
+            kind: 'error',
+            title: 'Could not update current track',
+            message:
+              'Automatic updates will continue in the background.',
+            dedupeKey: 'current-playback-error',
+          })
+
+          hasShownPlaybackError.current = true
+        }
 
         setPlaybackState({
           status: 'error',
@@ -188,7 +221,10 @@ function CurrentTrackCard({
         handleVisibilityChange,
       )
     }
-  }, [onUnauthorized])
+  }, [
+    onUnauthorized,
+    showNotification,
+  ])
 
   return (
     <section

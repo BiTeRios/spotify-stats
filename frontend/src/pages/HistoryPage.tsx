@@ -4,12 +4,22 @@ import {
   getRecentHistory,
   type RecentHistoryResponse,
 } from '../api/history'
+
 import { ApiRequestError } from '../api/client'
 import HistoryItem from '../components/HistoryItem'
+
 import {
   formatTimeZoneLabel,
   getUserTimeZone,
 } from '../utils/formatPlayedAt'
+
+import {
+  useNotifications,
+} from '../contexts/NotificationContext'
+
+import {
+  getUserFacingError,
+} from '../utils/getUserFacingError'
 
 import HistoryItemSkeleton from '../components/HistoryItemSkeleton'
 
@@ -36,6 +46,10 @@ interface HistoryPageProps {
 function HistoryPage({
   onUnauthorized,
 }: HistoryPageProps) {
+  const {
+    showNotification,
+  } = useNotifications()
+
   const [historyState, setHistoryState] =
     useState<HistoryState>({
       status: 'loading',
@@ -95,15 +109,24 @@ function HistoryPage({
           return
         }
 
-        const message =
-          requestError instanceof Error
-            ? requestError.message
-            : 'Could not load your recent listening history.'
+        const message = getUserFacingError(
+          requestError,
+          'Could not load your recent listening history.',
+        )
 
-        setHistoryState({
-          status: 'error',
+        showNotification({
+          kind: 'error',
+          title: 'Could not load listening history',
           message,
+          dedupeKey: 'recent-history-error',
         })
+
+        if (!isManualRefresh) {
+          setHistoryState({
+            status: 'error',
+            message,
+          })
+        }
       } finally {
         if (!isCancelled) {
           setIsRefreshing(false)
@@ -116,7 +139,11 @@ function HistoryPage({
     return () => {
       isCancelled = true
     }
-  }, [historyReloadKey, onUnauthorized])
+  }, [
+    historyReloadKey, 
+    onUnauthorized, 
+    showNotification,
+  ])
 
   function handleRefresh() {
     setHistoryReloadKey(

@@ -2782,3 +2782,227 @@
     transition: none;
   }
 }
+
+/* =========================================
+   Application notifications
+   ========================================= */
+
+.app-notification-center {
+  position: fixed;
+  top: 92px;
+  right: 24px;
+  z-index: 1000;
+  display: grid;
+  gap: 12px;
+  width: min(380px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.app-notification {
+  display: grid;
+  grid-template-columns:
+    38px
+    minmax(0, 1fr)
+    32px;
+  align-items: start;
+  gap: 12px;
+  padding: 16px;
+  border:
+    1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 16px;
+  background: rgba(24, 24, 24, 0.98);
+  box-shadow:
+    0 20px 55px rgba(0, 0, 0, 0.55);
+  pointer-events: auto;
+  animation:
+    notification-enter
+    180ms
+    ease-out;
+}
+
+.app-notification-error {
+  border-color: rgba(255, 92, 92, 0.42);
+}
+
+.app-notification-success {
+  border-color: rgba(30, 215, 96, 0.42);
+}
+
+.app-notification-info {
+  border-color: rgba(80, 160, 255, 0.42);
+}
+
+.app-notification-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-weight: 900;
+}
+
+.app-notification-error
+.app-notification-icon {
+  color: #ff8e8e;
+  background: rgba(255, 92, 92, 0.13);
+}
+
+.app-notification-success
+.app-notification-icon {
+  color: #1ed760;
+  background: rgba(30, 215, 96, 0.13);
+}
+
+.app-notification-info
+.app-notification-icon {
+  color: #70b6ff;
+  background: rgba(80, 160, 255, 0.13);
+}
+
+.app-notification-content {
+  min-width: 0;
+}
+
+.app-notification-content strong {
+  display: block;
+  color: #ffffff;
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.app-notification-content p {
+  margin: 5px 0 0;
+  color: #b3b3b3;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.app-notification-close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #b3b3b3;
+  background: transparent;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.app-notification-close:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+@keyframes notification-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 720px) {
+  .app-notification-center {
+    top: auto;
+    right: 12px;
+    bottom:
+      max(12px, env(safe-area-inset-bottom));
+    left: 12px;
+    width: auto;
+  }
+
+  .app-notification {
+    grid-template-columns:
+      36px
+      minmax(0, 1fr)
+      32px;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .app-notification-icon {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-notification {
+    animation: none;
+  }
+}
+
+/* =========================================
+   Mobile layout hardening
+   ========================================= */
+
+.app-shell,
+.app-main,
+.profile-page,
+.dashboard-content {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.profile-heading,
+.profile-content,
+.current-track-content,
+.track-item-content,
+.history-item-content,
+.artist-card-content,
+.section-heading > div {
+  min-width: 0;
+}
+
+.profile-heading h1,
+.track-item h3,
+.history-item h3,
+.current-track-content h3,
+.artist-card h3 {
+  overflow-wrap: anywhere;
+}
+
+.detail-item strong,
+.track-artists,
+.track-album,
+.history-artists,
+.history-album,
+.current-track-artists,
+.current-track-album {
+  overflow-wrap: anywhere;
+}
+
+.primary-button,
+.secondary-button,
+.history-refresh-button,
+.time-range-button,
+.limit-selector button,
+.menu-toggle,
+.navigation-link {
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+@media (max-width: 720px) {
+  .profile-page {
+    min-height: calc(100vh - 68px);
+    min-height: calc(100dvh - 68px);
+
+    padding-bottom:
+      max(48px, env(safe-area-inset-bottom));
+  }
+}

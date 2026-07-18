@@ -22,6 +22,14 @@ import {
   type TopTracksResponse,
 } from './api/stats'
 
+import {
+  useNotifications,
+} from './contexts/NotificationContext'
+
+import {
+  getUserFacingError,
+} from './utils/getUserFacingError'
+
 import ArtistCard from './components/ArtistCard'
 import ArtistCardSkeleton from './components/ArtistCardSkeleton'
 import ProfileAvatar from './components/ProfileAvatar'
@@ -93,6 +101,10 @@ const TIME_RANGE_DESCRIPTIONS: Record<
 }
 
 function App() {
+  const {
+    showNotification,
+  } = useNotifications()
+
   const [pageState, setPageState] = useState<PageState>({
     status: 'loading',
   })
@@ -152,10 +164,10 @@ function App() {
           return
         }
 
-        const message =
-          requestError instanceof Error
-            ? requestError.message
-            : 'Could not load your Spotify profile.'
+        const message = getUserFacingError(
+          requestError,
+          'Could not load your Spotify profile.',
+        )
 
         setPageState({
           status: 'error',
@@ -217,14 +229,21 @@ function App() {
           return
         }
 
-        const message =
-          requestError instanceof Error
-            ? requestError.message
-            : 'Could not load your top artists.'
+        const message = getUserFacingError(
+          requestError,
+          'Could not load your top artists.',
+        )
 
         setArtistsState({
           status: 'error',
           message,
+        })
+
+        showNotification({
+          kind: 'error',
+          title: 'Could not load top artists',
+          message,
+          dedupeKey: 'top-artists-error',
         })
       }
     }
@@ -239,6 +258,7 @@ function App() {
     selectedArtistTimeRange,
     selectedArtistLimit,
     artistsReloadKey,
+    showNotification,
   ])
 
   useEffect(() => {
@@ -291,14 +311,21 @@ function App() {
           return
         }
 
-        const message =
-          requestError instanceof Error
-            ? requestError.message
-            : 'Could not load your top tracks.'
+        const message = getUserFacingError(
+          requestError,
+          'Could not load your top tracks.',
+        )
 
         setTracksState({
           status: 'error',
           message,
+        })
+
+        showNotification({
+          kind: 'error',
+          title: 'Could not load top tracks',
+          message,
+          dedupeKey: 'top-tracks-error',
         })
       }
     }
@@ -313,13 +340,23 @@ function App() {
     selectedTrackTimeRange,
     selectedTrackLimit,
     tracksReloadKey,
+    showNotification,
   ])
 
   const handleUnauthorized = useCallback(() => {
+    showNotification({
+      kind: 'error',
+      title: 'Spotify session expired',
+      message:
+        'Sign in again to continue viewing your statistics.',
+      durationMs: 8_000,
+      dedupeKey: 'spotify-session-expired',
+    })
+
     setPageState({
       status: 'guest',
     })
-  }, [])
+  }, [showNotification])
 
   async function handleLogout() {
     setIsLoggingOut(true)
@@ -331,16 +368,18 @@ function App() {
         status: 'guest',
       })
     } catch (requestError) {
-      const message =
-        requestError instanceof Error
-          ? requestError.message
-          : 'Could not log out.'
+    const message = getUserFacingError(
+      requestError,
+      'Could not log out. Please try again.',
+    )
 
-      setPageState({
-        status: 'error',
-        message,
-      })
-    } finally {
+    showNotification({
+      kind: 'error',
+      title: 'Could not log out',
+      message,
+      dedupeKey: 'logout-error',
+    })
+  } finally {
       setIsLoggingOut(false)
     }
   }
