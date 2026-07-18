@@ -96,33 +96,37 @@ The backend is responsible for:
 
 ## Screenshots
 
-Screenshots will be added to the repository before the `v1.0.0` portfolio release.
-
-Recommended locations:
-
-```text
-docs/screenshots/dashboard.png
-docs/screenshots/top-artists.png
-docs/screenshots/top-tracks.png
-docs/screenshots/history.png
-docs/screenshots/mobile.png
-```
-
-<!--
-After adding the files, replace this comment with:
+### Dashboard
 
 <p align="center">
-  <img src="docs/screenshots/dashboard.png" alt="StatsClever dashboard" width="900" />
+  <img
+    src="docs/screenshots/dashboard.png"
+    alt="StatsClever dashboard"
+    width="100%"
+  />
 </p>
+
+### Personalized statistics
 
 | Top artists | Top tracks |
 | --- | --- |
-| ![Top artists](docs/screenshots/top-artists.png) | ![Top tracks](docs/screenshots/top-tracks.png) |
+| <img src="docs/screenshots/top-artists.png" alt="StatsClever top artists page" /> | <img src="docs/screenshots/top-tracks.png" alt="StatsClever top tracks page" /> |
 
-| Recent history | Mobile layout |
+### Playback and listening history
+
+| Current playback | Recently played |
 | --- | --- |
-| ![Recent history](docs/screenshots/history.png) | ![Mobile layout](docs/screenshots/mobile.png) |
--->
+| <img src="docs/screenshots/current.png" alt="StatsClever current playback component" /> | <img src="docs/screenshots/history.png" alt="StatsClever recently played page" /> |
+
+### Responsive layout
+
+<p align="center">
+  <img
+    src="docs/screenshots/mobile.png"
+    alt="StatsClever mobile layout"
+    width="360"
+  />
+</p>
 
 ## Project Structure
 
