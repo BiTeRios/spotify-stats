@@ -3,8 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
-
 import app.models  # noqa: F401
 from app.database import Base, engine
 from app.api import auth, health, me, stats, history, player
@@ -27,7 +25,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(
     title=settings.app_name,
-    description="Backend API for the Spotify Stats application",
+    description="Backend API for the StatsClever application",
     version=settings.app_version,
     debug=settings.debug,
     lifespan=lifespan,

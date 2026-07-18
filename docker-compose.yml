@@ -4,7 +4,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
 
-    container_name: spotify-stats-backend
+    container_name: stats-clever-backend
 
     env_file:
       - ./backend/.env
@@ -44,7 +44,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
 
-    container_name: spotify-stats-frontend
+    container_name: stats-clever-frontend
 
     env_file:
       - ./frontend/.env

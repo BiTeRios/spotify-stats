@@ -18,7 +18,7 @@ function AppLayout({
           <a
             className="brand"
             href={showNavigation ? '#overview' : '/'}
-            aria-label="Spotify Stats home"
+            aria-label="StatsClever home"
           >
             <span
               className="brand-mark"
@@ -30,7 +30,7 @@ function AppLayout({
             </span>
 
             <span className="brand-text">
-              Spotify Stats
+              StatsClever
             </span>
           </a>
 

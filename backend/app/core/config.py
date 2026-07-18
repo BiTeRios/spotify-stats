@@ -9,7 +9,7 @@ BACKEND_DIR = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
-    app_name: str = "Spotify Stats API"
+    app_name: str = "StatsClever API"
     app_version: str = "0.1.0"
     app_environment: Literal["development", "testing", "production"] = (
         "development"

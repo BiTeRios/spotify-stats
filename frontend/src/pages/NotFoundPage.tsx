@@ -16,7 +16,7 @@ function NotFoundPage() {
     const previousTitle = document.title
 
     document.title =
-      'Page not found | Spotify Stats'
+      'Page not found | StatsClever'
 
     return () => {
       document.title = previousTitle

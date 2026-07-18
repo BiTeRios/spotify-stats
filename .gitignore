@@ -2,24 +2,24 @@
 .env
 .env.*
 !.env.example
-*.local
 
-# Frontend
-frontend/node_modules/
-frontend/dist/
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
 
-# Backend
-backend/.venv/
-backend/.venv-python39
-backend/venv/
-backend/__pycache__/
-backend/**/*.pyc
-backend/.pytest_cache/
-
-# Database
+# SQLite
 *.db
 *.sqlite
 *.sqlite3
+
+# Node.js
+node_modules/
+frontend/node_modules/
+frontend/dist/
 
 # IDE
 .vscode/
@@ -31,3 +31,9 @@ Thumbs.db
 
 # Logs
 *.log
+logs/
+
+# Coverage
+coverage/
+htmlcov/
+.coverage

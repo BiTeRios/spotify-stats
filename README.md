@@ -1,325 +1,421 @@
-# Spotify Stats
+<div align="center">
 
-Spotify Stats is a responsive web application for viewing personal Spotify listening statistics.
+# StatsClever
 
-Users will be able to sign in with their Spotify account and explore their favorite artists, favorite tracks, recently played songs, currently playing track, and music preferences across different time ranges.
+### A full-stack personal listening dashboard powered by the Spotify Web API
 
-The application uses the official Spotify Web API.
+[![React](https://img.shields.io/badge/React-19-20232a?logo=react&logoColor=61DAFB)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.128-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![SQLite](https://img.shields.io/badge/SQLite-Local%20Database-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
 
-## Project Goals
+StatsClever lets users securely connect their Spotify account and explore their profile, favorite artists, favorite tracks, recent listening activity, and current playback state in a responsive dashboard.
 
-The main goals of the project are:
+</div>
 
-* provide a clean and convenient interface for Spotify statistics;
-* keep Spotify credentials and tokens secure on the backend;
-* use a clear and maintainable project architecture;
-* build a small but fully functional MVP;
-* support future deployment with Docker;
-* allow future expansion to a mobile application.
+> **Note:** StatsClever is an independent portfolio project. It is not affiliated with, endorsed by, or sponsored by Spotify.
+
+## Overview
+
+StatsClever is a local-first full-stack web application built to demonstrate practical frontend and backend development with third-party OAuth integration.
+
+The React frontend communicates only with the FastAPI backend. Spotify credentials, access tokens, refresh tokens, API requests, session management, response transformation, and error handling remain on the server.
+
+## Features
+
+- Spotify OAuth 2.0 Authorization Code Flow
+- Secure server-side token handling
+- Persistent authentication with HttpOnly cookies
+- Hashed application session tokens
+- Automatic Spotify access-token refresh
+- Spotify profile information and profile links
+- Top artists for three Spotify time ranges
+- Top tracks with configurable result limits
+- Recently played tracks with local date and time formatting
+- Current playback status with automatic polling
+- Responsive desktop and mobile interface
+- Skeleton loading states
+- Empty states and user-friendly error messages
+- Centralized notification system
+- Custom 404 page
+- Interactive FastAPI Swagger documentation
+- Docker Compose setup for frontend and backend
+- Built-in test scenarios for API error and empty-state handling
 
 ## Technology Stack
 
 ### Frontend
 
-* React
-* TypeScript
-* Vite
-* Tailwind CSS
-* React Router
-* TanStack Query
-* Recharts
-* Fetch API or Axios
+- React 19
+- TypeScript 6
+- Vite 8
+- React Router
+- Fetch API
+- CSS
+- Oxlint
 
 ### Backend
 
-* Python
-* FastAPI
-* Pydantic
-* SQLAlchemy
-* Alembic
-* HTTPX
-* Uvicorn
-
-### Database
-
-* SQLite for local development
-* PostgreSQL for production
+- Python 3.14
+- FastAPI
+- Pydantic
+- SQLAlchemy Async
+- HTTPX
+- Uvicorn
+- SQLite with `aiosqlite`
 
 ### Infrastructure
 
-* Git and GitHub
-* Docker
-* Docker Compose
+- Docker
+- Docker Compose
+- Git and GitHub
 
-## Application Architecture
+## Architecture
 
-```text
-User
-  ↓
-React Frontend
-  ↓
-FastAPI Backend
-  ↓
-Spotify Web API
-  ↓
-SQLite / PostgreSQL
+```mermaid
+flowchart LR
+    U[User] --> F[React Frontend]
+    F -->|REST API + credentials| B[FastAPI Backend]
+    B -->|OAuth and Web API requests| S[Spotify Web API]
+    B --> D[(SQLite Database)]
 ```
 
-The frontend does not communicate with Spotify directly.
+The frontend never communicates with Spotify directly.
 
-All Spotify API requests, authentication logic, token handling, data transformation, and error handling are managed by the FastAPI backend.
+The backend is responsible for:
+
+- OAuth authorization and callback validation;
+- Spotify token exchange and refresh;
+- application session creation and validation;
+- Spotify Web API requests;
+- data validation and transformation;
+- centralized error handling;
+- local persistence of users, tokens, and sessions.
+
+## Screenshots
+
+Screenshots will be added to the repository before the `v1.0.0` portfolio release.
+
+Recommended locations:
+
+```text
+docs/screenshots/dashboard.png
+docs/screenshots/top-artists.png
+docs/screenshots/top-tracks.png
+docs/screenshots/history.png
+docs/screenshots/mobile.png
+```
+
+<!--
+After adding the files, replace this comment with:
+
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" alt="StatsClever dashboard" width="900" />
+</p>
+
+| Top artists | Top tracks |
+| --- | --- |
+| ![Top artists](docs/screenshots/top-artists.png) | ![Top tracks](docs/screenshots/top-tracks.png) |
+
+| Recent history | Mobile layout |
+| --- | --- |
+| ![Recent history](docs/screenshots/history.png) | ![Mobile layout](docs/screenshots/mobile.png) |
+-->
 
 ## Project Structure
 
 ```text
-spotify-stats/
+statsclever/
+├── backend/
+│   ├── app/
+│   │   ├── api/             # FastAPI route handlers
+│   │   ├── core/            # Configuration and security helpers
+│   │   ├── middleware/      # Test-response middleware
+│   │   ├── models/          # SQLAlchemy database models
+│   │   ├── schemas/         # Pydantic request and response schemas
+│   │   ├── services/        # Spotify and application business logic
+│   │   ├── database.py
+│   │   └── main.py
+│   ├── .env.example
+│   ├── Dockerfile
+│   └── requirements.txt
+│
 ├── frontend/
 │   ├── public/
 │   ├── src/
-│   │   ├── api/
-│   │   ├── components/
-│   │   ├── features/
-│   │   ├── hooks/
-│   │   ├── layouts/
-│   │   ├── pages/
-│   │   ├── types/
-│   │   ├── utils/
+│   │   ├── api/             # Backend API clients
+│   │   ├── components/      # Reusable UI components
+│   │   ├── config/          # Frontend environment configuration
+│   │   ├── contexts/        # Notification context
+│   │   ├── layouts/         # Shared application layout
+│   │   ├── pages/           # History and 404 pages
+│   │   ├── types/           # Shared TypeScript types
+│   │   ├── utils/           # Formatting and error helpers
 │   │   ├── App.tsx
 │   │   └── main.tsx
-│   ├── package.json
-│   └── vite.config.ts
+│   ├── .env.example
+│   ├── Dockerfile
+│   └── package.json
 │
-├── backend/
-│   ├── app/
-│   │   ├── api/
-│   │   ├── core/
-│   │   ├── models/
-│   │   ├── repositories/
-│   │   ├── schemas/
-│   │   ├── services/
-│   │   ├── __init__.py
-│   │   └── main.py
-│   ├── tests/
-│   └── requirements.txt
-│
-├── .gitignore
 ├── docker-compose.yml
+├── .gitignore
 └── README.md
 ```
 
-Some directories will be added gradually as the application grows.
+## Getting Started with Docker
 
-## MVP Features
+Docker Compose is the recommended way to run the project.
 
-The first version of the application will include:
+### Prerequisites
 
-* Spotify account authentication;
-* user profile information;
-* top artists;
-* top tracks;
-* statistics for multiple time ranges;
-* recently played tracks;
-* currently playing track;
-* logout functionality;
-* loading, error, and empty states;
-* responsive desktop and mobile layouts.
+- Git
+- Docker Desktop or Docker Engine with Docker Compose
+- A Spotify Developer application
 
-## Spotify Statistics Time Ranges
+### 1. Clone the repository
 
-Spotify provides top artists and tracks for three time ranges:
+```bash
+git clone https://github.com/YOUR_USERNAME/statsclever.git
+cd statsclever
+```
 
-* `short_term` — approximately the last 4 weeks;
-* `medium_term` — approximately the last 6 months;
-* `long_term` — approximately the last year.
+Replace `YOUR_USERNAME` with your GitHub username.
 
-These results represent Spotify's calculated user preferences. They are not exact play counts.
+### 2. Configure the Spotify application
 
-## Planned Backend API
+Create an application in the Spotify Developer Dashboard and add this redirect URI:
 
 ```text
-GET  /api/health
-GET  /api/auth/login
-GET  /api/auth/callback
-POST /api/auth/logout
-GET  /api/auth/session
-GET  /api/me
-GET  /api/stats/top-artists
-GET  /api/stats/top-tracks
-GET  /api/history/recent
-GET  /api/player/current
+http://127.0.0.1:8000/api/auth/callback
 ```
 
-## Local Development
+Use the exact same URI in both Spotify settings and the backend environment file. Do not replace `127.0.0.1` with `localhost` unless every related setting is changed consistently.
 
-### Requirements
-
-Install the following tools before running the project:
-
-* Node.js
-* npm
-* Python 3
-* Git
-
-## Running the Frontend
-
-Open a terminal in the project root and move to the frontend directory:
-
-```bash
-cd frontend
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Start the Vite development server:
-
-```bash
-npm run dev
-```
-
-The frontend will usually be available at:
+The application requests these Spotify scopes:
 
 ```text
-http://localhost:5173
+user-read-private
+user-top-read
+user-read-recently-played
+user-read-currently-playing
+user-read-playback-state
 ```
 
-Run the linter:
+### 3. Create environment files
+
+PowerShell:
+
+```powershell
+Copy-Item backend/.env.example backend/.env
+Copy-Item frontend/.env.example frontend/.env
+```
+
+macOS or Linux:
 
 ```bash
-npm run lint
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
 ```
 
-Create a production build:
+Open `backend/.env` and provide your Spotify credentials:
+
+```env
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:8000/api/auth/callback
+```
+
+The frontend configuration should contain:
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000
+```
+
+Never commit either `.env` file.
+
+### 4. Start the application
 
 ```bash
-npm run build
+docker compose up --build
 ```
 
-## Running the Backend
+After both containers start, open:
 
-Open a terminal in the project root and move to the backend directory:
+| Service | URL |
+| --- | --- |
+| Frontend | `http://127.0.0.1:5173` |
+| Backend | `http://127.0.0.1:8000` |
+| Swagger UI | `http://127.0.0.1:8000/docs` |
+| Health check | `http://127.0.0.1:8000/api/health` |
+
+### 5. Stop the application
+
+```bash
+docker compose down
+```
+
+The SQLite database is created automatically inside the `backend` directory and is ignored by Git.
+
+## Running without Docker
+
+### Backend
+
+Requirements:
+
+- Python 3.14
 
 ```bash
 cd backend
-```
-
-Create a virtual environment:
-
-```bash
 python -m venv .venv
 ```
 
-Activate it in PowerShell:
+Activate the environment in PowerShell:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
-Install backend dependencies:
+Activate it on macOS or Linux:
 
 ```bash
+source .venv/bin/activate
+```
+
+Install dependencies and start FastAPI:
+
+```bash
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Start the FastAPI development server:
+### Frontend
+
+Requirements:
+
+- Node.js 22+
+- npm
+
+In a second terminal:
 
 ```bash
-python -m uvicorn app.main:app --reload
+cd frontend
+npm ci
+npm run dev
 ```
 
-The backend will be available at:
+## Available Scripts
+
+From the `frontend` directory:
+
+```bash
+npm run dev      # Start the Vite development server
+npm run lint     # Run Oxlint
+npm run build    # Type-check and create a production build
+npm run preview  # Preview the production build locally
+```
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/health` | Check backend health |
+| `GET` | `/api/auth/login` | Start Spotify authorization |
+| `GET` | `/api/auth/callback` | Complete Spotify authorization |
+| `GET` | `/api/auth/session` | Read the current application session |
+| `POST` | `/api/auth/logout` | Revoke the current application session |
+| `GET` | `/api/me` | Get the authenticated Spotify profile |
+| `GET` | `/api/stats/top-artists` | Get top artists by time range |
+| `GET` | `/api/stats/top-tracks` | Get top tracks by time range |
+| `GET` | `/api/history/recent` | Get recently played tracks |
+| `GET` | `/api/player/current` | Get current playback state |
+
+Example:
 
 ```text
-http://localhost:8000
+GET /api/stats/top-artists?time_range=medium_term&limit=20
 ```
 
-Interactive API documentation:
+Supported time ranges:
+
+- `short_term` — approximately the last 4 weeks;
+- `medium_term` — approximately the last 6 months;
+- `long_term` — approximately the last year.
+
+## Test Scenarios
+
+The backend includes middleware for testing frontend empty and error states without waiting for a real Spotify API failure.
+
+Configure `backend/.env`:
+
+```env
+APP_ENVIRONMENT=testing
+TEST_API_TARGET=top-artists
+TEST_API_SCENARIO=empty
+```
+
+Available targets:
 
 ```text
-http://localhost:8000/docs
+me
+top-artists
+top-tracks
+history
+player
 ```
 
-Alternative API documentation:
+Available scenarios:
 
 ```text
-http://localhost:8000/redoc
+empty
+401
+403
+429
+500
 ```
 
-## Environment Variables
+Return to normal API behavior after testing:
 
-Local configuration and secrets will be stored in environment files.
-
-Real `.env` files must never be committed to Git.
-
-Example environment files will be provided using:
-
-```text
-.env.example
+```env
+APP_ENVIRONMENT=development
+TEST_API_TARGET=none
+TEST_API_SCENARIO=none
 ```
 
-Spotify credentials such as the client secret must only be stored on the backend.
+Restart the backend after changing environment values.
 
-## Security Principles
+## Security Notes
 
-* Never expose the Spotify client secret in the frontend.
-* Never send refresh tokens to React.
-* Never commit real secrets to Git.
-* Use the backend for all Spotify API requests.
-* Store authentication data securely.
-* Request only the Spotify permissions required by the application.
-* Use secure session cookies in production.
-* Use HTTPS in production.
+- The Spotify Client Secret is stored only on the backend.
+- Spotify tokens are never exposed to the React application.
+- OAuth state is generated securely and validated during the callback.
+- Application sessions use random tokens stored in HttpOnly cookies.
+- Only SHA-256 hashes of application session tokens are stored in SQLite.
+- `.env`, SQLite databases, build output, dependencies, and Python cache files are excluded through `.gitignore`.
+- Production use would additionally require HTTPS, secure cookies, encrypted Spotify tokens, and production-grade secret management.
 
-## Development Status
+## Data and API Limitations
 
-Current progress:
+- Top artists and tracks are Spotify preference rankings, not exact play counts.
+- Recently played data is limited to the history currently exposed by the Spotify Web API.
+- StatsClever does not provide a complete historical archive of a Spotify account.
+- The current version does not play music or control Spotify playback.
+- Local data begins fresh when the SQLite database is deleted.
 
-* [x] Git repository created
-* [x] React, Vite, and TypeScript frontend created
-* [x] FastAPI backend created
-* [x] Environment variables configured
-* [x] CORS configured
-* [x] Health endpoint added
-* [x] Frontend connected to backend
-* [x] Spotify Developer application configured
-* [x] Spotify authentication implemented
-* [x] User profile implemented
-* [x] Top artists implemented
-* [x] Top tracks implemented
-* [x] Recently played tracks implemented
-* [x] Currently playing track implemented
-* [x] Docker configuration added
-* [ ] Production deployment completed
+## Roadmap
 
-## Development Rules
+- Automated backend tests
+- Frontend component and end-to-end tests
+- GitHub Actions for linting and builds
+- PostgreSQL configuration for production environments
+- Database migrations
+- Improved accessibility testing
+- Optional self-hosted deployment configuration
 
-* Keep every development stage functional.
-* Add complexity only when it solves a real problem.
-* Keep business logic out of React components.
-* Keep Spotify integration in dedicated backend services.
-* Transform Spotify responses into application-specific schemas.
-* Handle errors without exposing raw technical messages to users.
-* Reuse components and utility functions where appropriate.
-* Do not start advanced analytics before authentication and core Spotify data are working.
+## Acknowledgements
 
-## Future Improvements
+This project uses the Spotify Web API. Album artwork, artist images, track metadata, and Spotify links are provided by Spotify.
 
-After completing the MVP, the project may be extended with:
-
-* persistent listening history;
-* listening activity charts;
-* monthly and yearly comparisons;
-* estimated listening time;
-* ranking position changes;
-* Spotify Extended Streaming History import;
-* shareable statistics images;
-* personalized yearly summaries;
-* Progressive Web App support;
-* React Native mobile application.
-
-## License
-
-A license has not been selected yet.
+Spotify is a trademark of Spotify AB.
