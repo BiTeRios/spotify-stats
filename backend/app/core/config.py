@@ -16,6 +16,23 @@ class Settings(BaseSettings):
     )
     debug: bool = False
     api_prefix: str = "/api"
+    test_api_target: Literal[
+        "none",
+        "me",
+        "top-artists",
+        "top-tracks",
+        "history",
+        "player",
+    ] = "none"
+
+    test_api_scenario: Literal[
+        "none",
+        "empty",
+        "401",
+        "403",
+        "429",
+        "500",
+    ] = "none"
     
     frontend_url: str = "http://127.0.0.1:5173"
     database_url: str = "sqlite+aiosqlite:///./spotify_stats.db"

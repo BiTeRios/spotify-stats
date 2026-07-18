@@ -58,7 +58,7 @@ async def get_spotify_api_response(
                 "Spotify request limit was reached. "
                 "Try again later."
             ),
-            status_code=503,
+            status_code=429,
         )
 
     if response.is_error:

@@ -10,6 +10,10 @@ from app.database import Base, engine
 from app.api import auth, health, me, stats, history, player
 from app.core.config import settings
 
+from app.middleware.test_api_responses import (
+    TestApiResponseMiddleware,
+)
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     async with engine.begin() as connection:
@@ -27,6 +31,10 @@ app = FastAPI(
     version=settings.app_version,
     debug=settings.debug,
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    TestApiResponseMiddleware,
 )
 
 app.add_middleware(
