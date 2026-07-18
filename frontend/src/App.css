@@ -1616,6 +1616,9 @@
   .history-refresh-icon.is-spinning {
     animation: none;
   }
+  .not-found-record {
+    animation: none;
+  }
 }
 
 .current-track-section {
@@ -3004,5 +3007,200 @@ img {
 
     padding-bottom:
       max(48px, env(safe-area-inset-bottom));
+  }
+}
+
+/* =========================================
+   Not found page
+   ========================================= */
+
+.not-found-page {
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 76px);
+  min-height: calc(100dvh - 76px);
+  padding: 48px 24px;
+}
+
+.not-found-card {
+  width: min(680px, 100%);
+  padding: clamp(32px, 6vw, 64px);
+  border:
+    1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(30, 215, 96, 0.08),
+      rgba(24, 24, 24, 0.98) 46%
+    );
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.not-found-visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: clamp(150px, 24vw, 220px);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.not-found-code {
+  color: rgba(255, 255, 255, 0.06);
+  font-size: clamp(110px, 24vw, 210px);
+  font-weight: 900;
+  line-height: 0.85;
+  letter-spacing: -0.09em;
+  user-select: none;
+}
+
+.not-found-record {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: clamp(96px, 17vw, 148px);
+  height: clamp(96px, 17vw, 148px);
+  border:
+    2px solid rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(
+      circle,
+      #202020 0,
+      #202020 4px,
+      #151515 5px,
+      #151515 8px
+    );
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.45);
+  animation:
+    not-found-record-spin
+    8s
+    linear
+    infinite;
+}
+
+.not-found-record::after {
+  width: 12px;
+  height: 12px;
+  border: 4px solid #0d0d0d;
+  border-radius: 50%;
+  background: #ffffff;
+  content: "";
+}
+
+.not-found-record-label {
+  position: absolute;
+  width: 42%;
+  height: 42%;
+  border-radius: 50%;
+  background:
+    linear-gradient(
+      145deg,
+      #1ed760,
+      #11883d
+    );
+}
+
+.not-found-eyebrow {
+  margin: 0 0 12px;
+  color: #1ed760;
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.not-found-card h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(34px, 7vw, 58px);
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+}
+
+.not-found-description {
+  max-width: 500px;
+  margin: 20px auto 0;
+  color: #b3b3b3;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.not-found-path {
+  margin: 22px auto 0;
+  color: #8d8d8d;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.not-found-path code {
+  color: #d8d8d8;
+  font-family:
+    "SFMono-Regular",
+    Consolas,
+    "Liberation Mono",
+    monospace;
+  overflow-wrap: anywhere;
+}
+
+.not-found-home-link {
+  display: inline-flex;
+  width: auto;
+  min-width: 160px;
+  margin-top: 28px;
+  text-decoration: none;
+}
+
+@keyframes not-found-record-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 720px) {
+  .not-found-page {
+    min-height: calc(100vh - 68px);
+    min-height: calc(100dvh - 68px);
+    padding:
+      24px
+      16px
+      max(32px, env(safe-area-inset-bottom));
+  }
+
+  .not-found-card {
+    padding: 34px 20px;
+    border-radius: 22px;
+  }
+
+  .not-found-visual {
+    min-height: 150px;
+  }
+
+  .not-found-description {
+    font-size: 15px;
+  }
+
+  .not-found-home-link {
+    width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .not-found-page {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .not-found-card {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .not-found-code {
+    font-size: 100px;
   }
 }

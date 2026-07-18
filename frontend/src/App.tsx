@@ -30,6 +30,13 @@ import {
   getUserFacingError,
 } from './utils/getUserFacingError'
 
+import {
+  Route,
+  Routes,
+} from 'react-router'
+
+import NotFoundPage from './pages/NotFoundPage'
+
 import ArtistCard from './components/ArtistCard'
 import ArtistCardSkeleton from './components/ArtistCardSkeleton'
 import ProfileAvatar from './components/ProfileAvatar'
@@ -100,7 +107,7 @@ const TIME_RANGE_DESCRIPTIONS: Record<
     'Your Spotify favorites from approximately the last year.',
 }
 
-function App() {
+function DashboardPage() {
   const {
     showNotification,
   } = useNotifications()
@@ -840,6 +847,22 @@ function App() {
         )}
       </section>
     </AppLayout>
+  )
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={<DashboardPage />}
+      />
+
+      <Route
+        path="*"
+        element={<NotFoundPage />}
+      />
+    </Routes>
   )
 }
 
